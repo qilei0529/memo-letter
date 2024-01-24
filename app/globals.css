@@ -17,15 +17,39 @@
 }
 
 @font-face {
-  font-family: fusion-pixel-8px-monospaced-latin;
-  src: url("/pixel-font.woff2");
+  font-family: Pixel12;
+  src: url("/pixel-font-12.woff2?v=1.0") format('truetype');
+}
+@font-face {
+  font-family: Pixel10;
+  src: url("/pixel-font-10.woff2?v=1.0") format('truetype');
+}
+@font-face {
+  font-family: Pixel8;
+  src: url("/pixel-font-8.woff2?v=1.0") format('truetype');
 }
 .font-8px-monospaced:lang(en) {
-  font-family: fusion-pixel-8px-monospaced-latin, serif;
+  font-family: Pixel12, serif;
 }
-.the_font {
-  font-family: fusion-pixel-8px-monospaced-latin, serif;
-  font-size: 24px;
+.the_font_12 {
+  font-family: Pixel12, serif;
+  font-size: 18px;
+  -webkit-font-smoothing: none;
+}
+.the_font_10 {
+  font-family: Pixel10, serif;
+  font-size: 15px;
+  -webkit-font-smoothing: none;
+}
+.the_font_8 {
+  font-family: Pixel8, serif;
+  font-size: 12px;
+  -webkit-font-smoothing: none;
+}
+
+.editor {
+  background: none;
+  outline: none;
 }
 
 body {
