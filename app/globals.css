@@ -28,9 +28,6 @@
   font-family: Pixel8;
   src: url("/pixel-font-8.woff2?v=1.0") format('truetype');
 }
-.font-8px-monospaced:lang(en) {
-  font-family: Pixel12, serif;
-}
 .the_font_12 {
   font-family: Pixel12, serif;
   font-size: 18px;
