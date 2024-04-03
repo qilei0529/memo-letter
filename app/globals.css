@@ -2,31 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 @font-face {
   font-family: Pixel12;
-  src: url("/pixel-font-12.woff2?v=1.0") format('truetype');
+  src: url("/pixel-font-12.woff2?v=1.0") format("truetype");
 }
 @font-face {
   font-family: Pixel10;
-  src: url("/pixel-font-10.woff2?v=1.0") format('truetype');
+  src: url("/pixel-font-10.woff2?v=1.0") format("truetype");
 }
 @font-face {
   font-family: Pixel8;
-  src: url("/pixel-font-8.woff2?v=1.0") format('truetype');
+  src: url("/pixel-font-8.woff2?v=1.0") format("truetype");
 }
 .font-8px-monospaced:lang(en) {
   font-family: Pixel12, serif;
@@ -46,6 +32,62 @@
   font-size: 12px;
   -webkit-font-smoothing: none;
 }
+.the_font_44 {
+  font-family: "ziqufengxinzi", serif;
+  -webkit-font-smoothing: none;
+  /* "Kyokasho",  "YRDZST-Light"*/
+  /* HanWangWCL02 */
+
+  /* "YRDZST-Medium" */
+
+  /* like */
+  /* "Mengshen-Handwritten" */
+  /* JasonWriting2 */
+  /* ziquchuangketie */
+}
+
+.the_font_000 {
+  font-family: serif;
+  -webkit-font-smoothing: none;
+}
+
+.the_font_001 {
+  font-family: "", serif;
+  -webkit-font-smoothing: none;
+  /* font-smooth: none; */
+  @apply font-bold;
+}
+.the_font_none_smooth {
+  -webkit-font-smoothing: none;
+}
+
+.the_font_002 {
+  font-family: "Mengshen-Handwritten", serif;
+}
+
+.the_font_003 {
+  font-family: "JasonWriting2", serif;
+}
+
+.the_font_004 {
+  font-family: "ziquchuangketie", serif;
+}
+
+.the_font_005 {
+  font-family: "ziquqingheti", serif;
+}
+.the_font_006 {
+  font-family: "JasonWriting1", serif;
+}
+.the_font_007 {
+  font-family: "851tegakizatsu", serif;
+}
+.the_font_008 {
+  font-family: "FengKai-Light", serif;
+}
+.the_font_009 {
+  font-family: "Joker9", serif;
+}
 
 .editor {
   background: none;
@@ -53,17 +95,4 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
 }
