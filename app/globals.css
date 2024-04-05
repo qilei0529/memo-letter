@@ -48,12 +48,12 @@
 
 .the_font_000 {
   font-family: serif;
-  -webkit-font-smoothing: none;
+  /* -webkit-font-smoothing: none; */
 }
 
 .the_font_001 {
   font-family: "", serif;
-  -webkit-font-smoothing: none;
+  /* -webkit-font-smoothing: none; */
   /* font-smooth: none; */
   @apply font-bold;
 }
@@ -61,23 +61,47 @@
   -webkit-font-smoothing: none;
 }
 
+@font-face {
+  font-family: "MyCustomFont";
+  src: url("/font.ttf") format("truetype");
+}
+@font-face {
+  font-family: "MyCustomFont2";
+  src: url("/font2.ttf") format("truetype");
+}
+@font-face {
+  font-family: "MyCustomFont3";
+  src: url("/font3.ttf") format("truetype");
+}
+
+.the_font_000 {
+  font-family: "MyCustomFont", serif;
+}
+
+.the_font_0002 {
+  font-family: "MyCustomFont2", serif;
+}
+
+.the_font_0003 {
+  font-family: "MyCustomFont3", serif;
+}
+
 .the_font_002 {
   font-family: "Mengshen-Handwritten", serif;
 }
 
 .the_font_003 {
-  font-family: "JasonWriting2", serif;
+  font-family: "JasonHandwriting6-Regular", serif;
 }
 
 .the_font_004 {
   font-family: "ziquchuangketie", serif;
 }
-
 .the_font_005 {
   font-family: "ziquqingheti", serif;
 }
 .the_font_006 {
-  font-family: "JasonWriting1", serif;
+  font-family: "ziqumanshuti", serif;
 }
 .the_font_007 {
   font-family: "851tegakizatsu", serif;
@@ -86,7 +110,13 @@
   font-family: "FengKai-Light", serif;
 }
 .the_font_009 {
-  font-family: "Joker9", serif;
+  font-family: "HanziPenTC-W5", serif;
+}
+.the_font_010 {
+  font-family: "MLingWaiMedium-TC", serif;
+}
+.the_font_011 {
+  font-family: "HanWangWeiBeiMedium-Gb5", serif;
 }
 
 .editor {
