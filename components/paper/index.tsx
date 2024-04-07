@@ -20,7 +20,7 @@ const LETTER = `先生亲启：
 →  2024.4.3  
 `
 
-export const PagerView = () => {
+export const PaperView = () => {
   const list = [
     "0001",
     "0002",
@@ -88,7 +88,7 @@ export const PagerView = () => {
               data-section={section}
               className={cn(
                 isEmpty ? "opacity-30" : "",
-                "absolute w-[20px] h-[30px] select-none"
+                "absolute w-[20px] h-[30px]"
               )}
               onMouseEnter={(e) => {
                 e.stopPropagation()
@@ -102,6 +102,7 @@ export const PagerView = () => {
                 e.stopPropagation()
                 selector.update(section)
                 inputFocus()
+                toggleShow(true)
                 setHoverSection(-1)
               }}
               style={{
@@ -119,7 +120,6 @@ export const PagerView = () => {
 
   const currentSection = useMemo(() => {
     if (letter) {
-      const { sections } = letter
       return selector.value?.section
     }
     return undefined
@@ -155,6 +155,7 @@ export const PagerView = () => {
                   e.stopPropagation()
                   selector.update(index)
                   inputFocus()
+                  toggleShow(true)
                   setHoverSection(-1)
                 }}
                 onClick={(e) => {
@@ -172,6 +173,8 @@ export const PagerView = () => {
   }, [hoverSection, currentSection, letterPVos])
 
   const setInputValue = useInputerStore((state) => state.setValue)
+  const inputShow = useInputerStore((state) => state.show)
+  const toggleShow = useInputerStore((state) => state.toggleShow)
   const setInputAlign = useInputerStore((state) => state.setAlign)
 
   useEffect(() => {
@@ -189,52 +192,56 @@ export const PagerView = () => {
 
   const inputFocus = useInputerStore((state) => state.inputFocus)
   const inputRender = useMemo(() => {
+    // selector
+    let top = 800
+
+    if (!inputShow) {
+      return null
+    }
     return (
-      <div
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-        className="absolute left-[140px] top-[670px]"
-      >
-        <InputerView onDelete={onDelete} onEnter={onEnter} />
-        <KeyBinder
-          onAction={(type) => {
-            if (type === "ENTER") {
-              onEnter("", true)
-            } else if (type === "DELETE") {
-              onDelete(true)
-            }
+      <>
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
           }}
-        />
-      </div>
+          className="w-full sm:w-[420px] bg-[rgba(255,255,255,.4)] pointer-events-auto rounded-xl backdrop-blur border-[1px] border-[#ddd] shadow-2xl shadow-[rgba(0,0,0,.1)]"
+        >
+          <InputerView onDelete={onDelete} onEnter={onEnter} />
+        </div>
+      </>
     )
-  }, [currentSection])
+  }, [currentSection, inputShow, letterPVos])
 
   return (
     <>
       <div
-        className={cn("bg-[#F3E7D9] w-[640px] relative")}
-        style={{
-          height: "800px",
+        className={cn(
+          "relative w-[460px] sm:w-[520px] origin-top scale-[0.8] sm:scale-100 h-[560px] sm:h-[800px] "
+        )}
+        onClick={() => {
+          selector.update(-1)
+          toggleShow(false)
         }}
-        onClick={() => selector.update(-1)}
       >
+        <div className="absolute w-[640px] bg-[#F3E7D9] top-0 left-[-100px] h-[800px] select-none"></div>
         <div
           className={cn(
             `the_font_${font} the_font_none_smooth1`,
-            `bg-blue-3001`,
+            `bg-blue-3001 h-[700px]`,
             // "select-none",
-            "absolute flex flex-col left-[140px] top-[40px] w-[420px] text-[#31271C] text-[20px] leading-[30px]"
+            "absolute flex flex-col left-[20px] sm:left-[50px] top-[40px] w-[420px] text-[#31271C] text-[20px] leading-[30px]"
           )}
           onMouseLeave={() => setHoverSection(-1)}
-          style={{
-            height: "700px",
-          }}
         >
           {hoverSectionRender}
           {letterRender}
         </div>
-        <div className={cn("w-[60px]", `the_font_0002`)}>
+        <div
+          className={cn(
+            "relative w-[60px] z-30 left-[-100px]",
+            `the_font_0002`
+          )}
+        >
           {list.map((item) => {
             return (
               <div
@@ -253,9 +260,26 @@ export const PagerView = () => {
           })}
         </div>
         {/* inputer */}
-        {inputRender}
       </div>
-      <div className="h-[400px]"></div>
+      <div className="fixed pointer-events-none flex flex-row w-[100%] bottom-0 sm:bottom-[40px] left-0  z-30">
+        <div className="flex-1"></div>
+        <div className="w-full sm:w-[520px] flex flex-row">
+          <div className="w-0 sm:w-[50px]"></div>
+          {inputRender}
+
+          <KeyBinder
+            onAction={(type) => {
+              if (type === "ENTER") {
+                onEnter("", true)
+              } else if (type === "DELETE") {
+                onDelete(true)
+              }
+            }}
+          />
+        </div>
+        <div className="flex-1"></div>
+      </div>
+      <div className="sm:h-[200px]"></div>
     </>
   )
 }

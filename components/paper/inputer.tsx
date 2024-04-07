@@ -10,14 +10,14 @@ export function InputerView({ onEnter, onDelete }: any) {
   const align = useInputerStore((state) => state.align)
   const focusTimeStamp = useInputerStore((state) => state.focusTimeStamp)
   const setValue = useInputerStore((state) => state.setValue)
-  const setActive = useInputerStore((state) => state.setActive)
+  const toggleActive = useInputerStore((state) => state.toggleActive)
 
   const handleFocus = () => {
-    setActive(true)
+    toggleActive(true)
   }
 
   const handleBlur = () => {
-    setActive(false)
+    toggleActive(false)
   }
 
   const handleEnter = (str: string) => {
@@ -64,15 +64,20 @@ export function InputerView({ onEnter, onDelete }: any) {
   }, [focusTimeStamp])
 
   return (
-    <div className="w-[240px] h-[80px] bg-white">
-      <Textarea
-        ref={textareaRef}
-        value={value}
-        onKeyDown={handleKeyDown}
-        onChange={onChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-      />
+    <div className="flex flex-row p-2">
+      <div className="w-full sm:w-[360px] flex flex-col">
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onKeyDown={handleKeyDown}
+          onChange={onChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          className="flex min-h-[82px] w-full rounded-lg resize-none border border-input appearance-none bg-none px-3 py-2 text-[14px] disabled:opacity-50"
+        />
+        <div className="h-[calc(env(safe-area-inset-bottom)-20px)]"></div>
+      </div>
+      <div className="w-[60px]"></div>
     </div>
   )
 }

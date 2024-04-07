@@ -11,6 +11,7 @@ type InputState = {
   value: string
 
   active: boolean
+  show: boolean
 
   align: "RIGHT" | "LEFT"
 
@@ -22,7 +23,8 @@ type IInputActions = {
 
   setValue: (value: string) => void
 
-  setActive: (active: boolean) => void
+  toggleShow: (show: boolean) => void
+  toggleActive: (active: boolean) => void
 
   setAlign: (align: "RIGHT" | "LEFT") => void
 
@@ -33,6 +35,8 @@ export const useInputerStore = create<InputState & IInputActions>()(
   // persist(
   (set, get) => {
     return {
+      show: false,
+
       selectorVos: {},
 
       value: "",
@@ -53,7 +57,9 @@ export const useInputerStore = create<InputState & IInputActions>()(
         }),
 
       setAlign: (align) => set((state) => ({ align })),
-      setActive: (active) => set((state) => ({ active })),
+
+      toggleShow: (show) => set((state) => ({ show })),
+      toggleActive: (active) => set((state) => ({ active })),
 
       setSelector(id, selector) {
         return set((state) => {
