@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from "react"
 import { useLetterStore } from "../stores/letter-store"
+import { useInputerStore } from "../stores/input-store"
 
 export const useLetterHook = ({ id }: { id: string }) => {
   const current = useLetterStore((state) => state.current)
   const letterVos = useLetterStore((state) => state.letterVos)
-  const selectorVos = useLetterStore((state) => state.selectorVos)
   const getLetter = useLetterStore((state) => state.getLetter)
   const createLetter = useLetterStore((state) => state.createLetter)
   const setLetter = useLetterStore((state) => state.setLetter)
@@ -12,7 +12,9 @@ export const useLetterHook = ({ id }: { id: string }) => {
 
   const insertSectionAt = useLetterStore((state) => state.insertSectionAt)
   const removeSectionAt = useLetterStore((state) => state.removeSectionAt)
-  const setSelector = useLetterStore((state) => state.setSelector)
+
+  const selectorVos = useInputerStore((state) => state.selectorVos)
+  const setSelector = useInputerStore((state) => state.setSelector)
 
   const letter = useMemo(() => {
     return getLetter(current ?? "")
@@ -49,25 +51,29 @@ export const useLetterHook = ({ id }: { id: string }) => {
   }, [id])
 
   const insert = (section: string, newLine?: boolean) => {
-    const { current, selectorVos, letterVos } = useLetterStore.getState()
+    const { current, letterVos } = useLetterStore.getState()
+    const { selectorVos } = useInputerStore.getState()
     if (current) {
       const letter = letterVos[current]
       const selector = selectorVos[current]
-      console.log("insert", section, newLine, selector)
-      const lines = section.indexOf("\n") > -1 ? section.split("\n") : [section]
+      console.log("insert", section, selector.section, newLine)
       let at = selector?.section ?? letter?.sections.length
       let isUpdate = selector?.section !== undefined
       if (newLine) {
         isUpdate = false
         at += 1
+        insertSectionAt(current, "", at)
+      } else {
+        const lines =
+          section.indexOf("\n") > -1 ? section.split("\n") : [section]
+
+        lines.forEach((line, index) => {
+          insertSectionAt(current, line, at, index === 0 ? isUpdate : false)
+          at += 1
+        })
       }
-      lines.forEach((line, index) => {
-        insertSectionAt(current, line, at, index === 0 ? isUpdate : false)
-        at += 1
-        if (index === 0 && newLine) {
-          at -= 1
-        }
-      })
+
+      // 如果 是修改 当前不是最后一行？
 
       // 切换到新的一行
       setSelector(current, {
@@ -76,22 +82,15 @@ export const useLetterHook = ({ id }: { id: string }) => {
     }
   }
   const remove = () => {
-    const { current, selectorVos } = useLetterStore.getState()
+    const { current } = useLetterStore.getState()
+    const { selectorVos } = useInputerStore.getState()
     if (current) {
       const selector = selectorVos[current]
       if (selector) {
         const section = selector.section
-        console.log("remove", selector)
         if (section >= 0) {
           removeSectionAt(current, section)
           // 更新 section 到上一行
-          const { letterVos } = useLetterStore.getState()
-          const letter = letterVos[current]
-          const { sections } = letter
-          console.log("remove", current, section, sections.length)
-          if (sections.length === 0) {
-            insertSectionAt(current, "", 0)
-          }
           let newSectionIndex = section - 1
           if (newSectionIndex < 0) {
             newSectionIndex = 0
@@ -194,10 +193,12 @@ export function transLetterToPos(letter: string) {
   })
 
   // 最后再加一行用于新增
-  pvos.push({
-    start: y,
-    end: y,
-  })
+  if (sections.length) {
+    pvos.push({
+      start: y,
+      end: y,
+    })
+  }
 
   return {
     vos,

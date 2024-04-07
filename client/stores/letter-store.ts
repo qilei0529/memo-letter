@@ -16,7 +16,6 @@ type ILetterState = {
   current: string | undefined
   letterVos: { [key: string]: ILetterData }
 
-  selectorVos: { [key: string]: ISelectorData }
   letters: string[]
 }
 
@@ -26,8 +25,6 @@ type ILetterActions = {
   setLetter: (id: string, data: ILetterData) => void
 
   setCurrent: (id: string) => void
-
-  setSelector: (id: string, selector: ISelectorData | null) => void
 
   getLetter: (id: string) => ILetterData | null
 
@@ -69,20 +66,6 @@ export const useLetterStore = create<ILetterState & ILetterActions>()(
               }
             }
             return {}
-          })
-        },
-
-        setSelector(id, selector) {
-          return set((state) => {
-            const vos = { ...state.selectorVos }
-            if (selector) {
-              vos[id] = selector
-            } else {
-              delete vos[id]
-            }
-            return {
-              selectorVos: vos,
-            }
           })
         },
 
@@ -137,7 +120,6 @@ export const useLetterStore = create<ILetterState & ILetterActions>()(
         removeSectionAt(id, at) {
           const { getLetter, updateLetter } = get()
           const item = getLetter(id)
-          console.log("remove", id, at)
           if (item) {
             const { sections } = item
             const list = [...sections]

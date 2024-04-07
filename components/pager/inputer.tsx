@@ -1,82 +1,50 @@
 import React, { useEffect, useRef, useState } from "react"
 
 import { Textarea } from "../ui/textarea"
+import { useInputerStore } from "@/client/stores/input-store"
 
-export const InputerView = ({ text, onDelete, onEnter, focusState }: any) => {
-  return (
-    <div className="absolute left-[140px] top-[670px]">
-      <div className="w-[240px] h-[80px] bg-white">
-        <MyTextarea
-          focusState={focusState}
-          text={text}
-          onDelete={onDelete}
-          onEnter={onEnter}
-        />
-      </div>
-    </div>
-  )
-}
-
-function MyTextarea({ text, onEnter, onDelete, focusState }: any) {
+export function InputerView({ onEnter, onDelete }: any) {
   const textareaRef = useRef<any>(null)
-  const focusRef = useRef<any>(false)
-  const valueRef = useRef<any>("")
 
-  useEffect(() => {
-    const elm = document.body
-    elm.removeEventListener("keydown", handleBodyKeyDown)
-    elm.addEventListener("keydown", handleBodyKeyDown)
-    return () => {
-      elm.removeEventListener("keydown", handleBodyKeyDown)
-    }
-  }, [])
-
-  const handleBodyKeyDown = (e: any) => {
-    if (!focusRef.current) {
-      // 如果没有焦点？
-      // console.log(e)
-      if (e.key === "Backspace") {
-        console.log("out delete")
-        onDelete?.(true)
-      }
-      if (e.key === "Enter") {
-        console.log("out delete")
-        onEnter?.("", true)
-      }
-    }
-  }
+  const value = useInputerStore((state) => state.value)
+  const align = useInputerStore((state) => state.align)
+  const focusTimeStamp = useInputerStore((state) => state.focusTimeStamp)
+  const setValue = useInputerStore((state) => state.setValue)
+  const setActive = useInputerStore((state) => state.setActive)
 
   const handleFocus = () => {
-    focusRef.current = true
+    setActive(true)
   }
 
   const handleBlur = () => {
-    focusRef.current = false
+    setActive(false)
   }
 
   const handleEnter = (str: string) => {
-    onEnter?.(str)
-    valueRef.current = ""
+    const RIGHT = "→  "
+    const text = `${align === "RIGHT" ? RIGHT : ""}${str}`
+    console.log(align)
+    onEnter?.(text)
+    // clear
     setValue("")
   }
 
   const handleKeyDown = (e: any) => {
     let key = ""
+    const { value: newValue } = useInputerStore.getState()
     if (e.key === "Enter" && !e.shiftKey) {
       key = "SEND"
       // if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       //   key = "SEND"
       // } else if (e.key === "Enter" && !e.shiftKey) {
       //   key = ""
-    } else if (e.key === "Backspace" && valueRef.current?.length === 0) {
-      console.log("edit delete", valueRef.current)
+    } else if (e.key === "Backspace" && newValue.length === 0) {
       key = "DELETE"
     }
 
     if (key) {
       e.preventDefault()
       const t = e.target.value
-
       if (key === "SEND") {
         handleEnter(t)
       } else if (key === "DELETE") {
@@ -85,35 +53,26 @@ function MyTextarea({ text, onEnter, onDelete, focusState }: any) {
     }
   }
 
-  const [value, setValue] = useState("")
-
-  const onChange = (e: any) => {
-    const t = e.target.value
-    valueRef.current = t
-    setValue(t)
-  }
+  const onChange = (e: any) => setValue(`${e.target.value}`)
 
   useEffect(() => {
-    valueRef.current = text
-    setValue(text)
-  }, [text])
-
-  useEffect(() => {
-    if (focusState) {
+    if (focusTimeStamp) {
       textareaRef.current.focus()
     } else {
       textareaRef.current.blur()
     }
-  }, [focusState])
+  }, [focusTimeStamp])
 
   return (
-    <Textarea
-      ref={textareaRef}
-      value={value}
-      onKeyDown={handleKeyDown}
-      onChange={onChange}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-    />
+    <div className="w-[240px] h-[80px] bg-white">
+      <Textarea
+        ref={textareaRef}
+        value={value}
+        onKeyDown={handleKeyDown}
+        onChange={onChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+      />
+    </div>
   )
 }

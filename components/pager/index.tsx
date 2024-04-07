@@ -1,8 +1,10 @@
 "use client"
 import { cn } from "@/lib/utils"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { InputerView } from "./inputer"
 import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
+import { KeyBinder } from "./key-binder"
+import { useInputerStore } from "@/client/stores/input-store"
 
 const LETTER = `先生亲启：
   见字如面，好久不见！
@@ -20,7 +22,7 @@ const LETTER = `先生亲启：
 
 export const PagerView = () => {
   const list = [
-    "000",
+    "0001",
     "0002",
     "0003",
     // "001",
@@ -31,35 +33,42 @@ export const PagerView = () => {
     // "006",
     // "007",
     // "008",
-    "009",
-    "010",
+    // "009",
+    // "010",
   ]
 
   const [font, setFont] = useState("0002")
 
   const { letter, selector, insert, remove } = useLetterHook({ id: "" })
   const onEnter = (str: string, newLine: boolean) => {
+    console.log(str, newLine)
     insert(str, newLine)
   }
 
   const onDelete = (flag: boolean) => {
     remove()
     if (flag) {
-      setFocusState(0)
+      inputFocus(0)
     } else {
-      setFocusState(new Date().getTime())
+      inputFocus()
     }
   }
 
-  const { letterVos, letterList, letterPVos } = useMemo(() => {
+  const { letterVos, letterList, letterPVos, isEmpty } = useMemo(() => {
     if (letter) {
       const { sections } = letter
       let letterBody = sections.join("\n")
+      let isEmpty = false
+      if (letterBody.length == 0) {
+        letterBody = "亲爱的先生："
+        isEmpty = true
+      }
       const { list, vos, pvos } = transLetterToPos(letterBody)
       return {
         letterVos: vos,
         letterList: list,
         letterPVos: pvos,
+        isEmpty,
       }
     }
     return {
@@ -78,7 +87,8 @@ export const PagerView = () => {
               key={key}
               data-section={section}
               className={cn(
-                "absolute top-0 w-[20px] h-[30px] bg-red-4001 flex items-center1"
+                isEmpty ? "opacity-30" : "",
+                "absolute w-[20px] h-[30px] select-none"
               )}
               onMouseEnter={(e) => {
                 e.stopPropagation()
@@ -91,7 +101,8 @@ export const PagerView = () => {
               onDoubleClick={(e) => {
                 e.stopPropagation()
                 selector.update(section)
-                setFocusState(new Date().getTime())
+                inputFocus()
+                setHoverSection(-1)
               }}
               style={{
                 left: `${pos.x * 10}px`,
@@ -143,7 +154,8 @@ export const PagerView = () => {
                 onDoubleClick={(e) => {
                   e.stopPropagation()
                   selector.update(index)
-                  setFocusState(new Date().getTime())
+                  inputFocus()
+                  setHoverSection(-1)
                 }}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -159,32 +171,44 @@ export const PagerView = () => {
     return null
   }, [hoverSection, currentSection, letterPVos])
 
-  const curSectionValue = useMemo(() => {
+  const setInputValue = useInputerStore((state) => state.setValue)
+  const setInputAlign = useInputerStore((state) => state.setAlign)
+
+  useEffect(() => {
     if (letter && currentSection !== undefined) {
       const { sections } = letter
-      return sections[currentSection] ?? ""
+      setTimeout(() => {
+        let text = sections[currentSection] ?? ""
+        const RIGHT = "→  "
+        let align = text.startsWith(RIGHT)
+        setInputAlign(align ? "RIGHT" : "LEFT")
+        setInputValue(text.replace(RIGHT, ""))
+      }, 100)
     }
-    return ""
   }, [currentSection])
 
-  const [focusState, setFocusState] = useState(0)
-
+  const inputFocus = useInputerStore((state) => state.inputFocus)
   const inputRender = useMemo(() => {
     return (
       <div
         onClick={(e) => {
           e.stopPropagation()
         }}
+        className="absolute left-[140px] top-[670px]"
       >
-        <InputerView
-          text={curSectionValue}
-          onDelete={onDelete}
-          onEnter={onEnter}
-          focusState={focusState}
+        <InputerView onDelete={onDelete} onEnter={onEnter} />
+        <KeyBinder
+          onAction={(type) => {
+            if (type === "ENTER") {
+              onEnter("", true)
+            } else if (type === "DELETE") {
+              onDelete(true)
+            }
+          }}
         />
       </div>
     )
-  }, [currentSection, focusState, curSectionValue])
+  }, [currentSection])
 
   return (
     <>
