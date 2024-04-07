@@ -2,12 +2,13 @@
 import { cn } from "@/lib/utils"
 import { useMemo, useState } from "react"
 import { InputerView } from "./inputer"
+import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
 
-const letter = `先生亲启：
+const LETTER = `先生亲启：
   见字如面，好久不见！
   人与人的羁绊本就薄如蝉翼，相逢一程已是感激万分。
   曾经总抱怨原来人和人之间的关系浅薄，为什么没有绝对的永远，没有真正的来日方长好像舍弃，离别，放弃，总是充屎着人生，要去做一些不得不的决定，这些问题我想破了脑袋。
-  但是现在不这么想了，现在的我逢人就说，遇见的人，遇见的事情都有它的道理，就像曾经遇见的人，带给你好的一切都还在影响你，虽然以后不同路了，但是陪伴你，成长过一段路，就已经很好了。没有所谓的来日方长，所以我们应过好现在。
+  但是现在不这么想了，现在的我逢人就说，遇见的人，遇见的事情都有它的道理，像曾经遇见的人，带给你好的一切都还在影响你，虽然以后不同路了，但是陪伴你，成长过一段路，就已经很好了。没有所谓的来日方长，所以我们应过好现在。
   清醒点，是你困住了自己，不是别人。
   有些人出现的意义，也许只会教会你一些什么，学会云秀人与人之间只有一段路的缘分。
 
@@ -15,9 +16,6 @@ const letter = `先生亲启：
 
 →  如雪  
 →  2024.4.3  
-`
-const track = `如雪
-2024.4.3
 `
 
 export const PagerView = () => {
@@ -39,22 +37,39 @@ export const PagerView = () => {
 
   const [font, setFont] = useState("0002")
 
-  const { letterVos, letterList } = useMemo(() => {
-    const { list, vos } = transLetterToPos(letter, track)
-    return {
-      letterVos: vos,
-      letterList: list,
+  const { letter, selector, insert, remove } = useLetterHook({ id: "" })
+  const onEnter = (str: string, newLine: boolean) => {
+    insert(str, newLine)
+  }
+
+  const onDelete = (flag: boolean) => {
+    remove()
+    if (flag) {
+      setFocusState(0)
+    } else {
+      setFocusState(new Date().getTime())
     }
-  }, [])
-  return (
-    <div className={cn(`min-h-[800px]`, "bg-[#F3E7D9] w-[640px] relative")}>
-      <div
-        className={cn(
-          `the_font_${font} the_font_none_smooth1`,
-          `min-h-[700px] bg-blue-3001`,
-          "absolute flex flex-col left-[140px] top-[40px] w-[420px] text-[#31271C] text-[20px] leading-[30px]"
-        )}
-      >
+  }
+
+  const { letterVos, letterList, letterPVos } = useMemo(() => {
+    if (letter) {
+      const { sections } = letter
+      let letterBody = sections.join("\n")
+      const { list, vos, pvos } = transLetterToPos(letterBody)
+      return {
+        letterVos: vos,
+        letterList: list,
+        letterPVos: pvos,
+      }
+    }
+    return {
+      letterList: [],
+    }
+  }, [letter])
+
+  const letterRender = useMemo(() => {
+    return (
+      <>
         {letterList.map((key) => {
           const item = letterVos[key]
           const { text, pos, section } = item
@@ -65,6 +80,19 @@ export const PagerView = () => {
               className={cn(
                 "absolute top-0 w-[20px] h-[30px] bg-red-4001 flex items-center1"
               )}
+              onMouseEnter={(e) => {
+                e.stopPropagation()
+                setHoverSection(section)
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                selector.update(section)
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation()
+                selector.update(section)
+                setFocusState(new Date().getTime())
+              }}
               style={{
                 left: `${pos.x * 10}px`,
                 top: `${pos.y * 30}px`,
@@ -74,111 +102,136 @@ export const PagerView = () => {
             </span>
           )
         })}
-        <div className="flex-1"></div>
-      </div>
-      <div className="w-[60px] the_font_005">
-        {list.map((item) => {
-          return (
-            <div
-              key={item}
-              className={font === item ? "bg-red-200  pl-2" : " pl-2"}
-              onClick={() => setFont(`${item}`)}
-            >
-              {item}
-            </div>
-          )
-        })}
-      </div>
-      <InputerView />
-    </div>
-  )
-}
+      </>
+    )
+  }, [letterList])
 
-function transLetterToPos(letter: string, track: string) {
-  const vos: any = {}
-  const list: string[] = []
-  let sections = letter.split("\n")
-  let x = 0
-  let y = 0
-  sections.forEach((section, n) => {
-    if (section.length) {
-      if (section.startsWith("→  ")) {
-        let len = section.length
-        if (len) {
-          x = 42
-          // 靠右显示
-          let sublist = []
-          for (let i = len - 1; i >= 3; i--) {
-            const text = section[i]
-            x -= getWidth(text)
-            if (x > 41) {
-              // 这里 如果很长的话有点意思
-              // 会有 bug
-              // x = 0
-              // y += 1
-            }
-
-            const pos = { x: x, y: y }
-            const key = `${y}_${x}`
-            sublist.unshift(key)
-            const item = {
-              pos: pos,
-              text: text,
-              section: n,
-            }
-            vos[key] = item
-          }
-          sublist.forEach((item) => {
-            list.push(item)
-          })
-        }
-      } else {
-        x = 0
-        for (let i = 0; i < section.length; i++) {
-          const text = section[i]
-          if (isChinesePunctuation(text)) {
-          } else if (x > 40) {
-            x = 0
-            y += 1
-          }
-          // 如果第一位是标点，就放到前一行的最后
-
-          const pos = { x: x, y: y }
-          const key = `${y}_${x}`
-          list.push(key)
-          const item = {
-            pos: pos,
-            text: text,
-            section: n,
-          }
-          vos[key] = item
-          x += getWidth(text)
-        }
-      }
+  const currentSection = useMemo(() => {
+    if (letter) {
+      const { sections } = letter
+      return selector.value?.section
     }
-    y += 1
-  })
+    return undefined
+  }, [selector, letter])
 
-  return {
-    vos,
-    list,
-  }
-}
+  const [hoverSection, setHoverSection] = useState(-1)
 
-function getWidth(char: string) {
-  if (isChinese(char)) {
-    return 2
-  }
-  if (isChinesePunctuation(char)) {
-    return 2
-  }
-  return 1
-}
+  const hoverSectionRender = useMemo(() => {
+    if (letterPVos) {
+      return (
+        <>
+          {letterPVos.map((p, index) => {
+            const style = {
+              top: `${p.start * 30}px`,
+              left: 0,
+              height: `${(p.end - p.start + 1) * 30}px`,
+            }
+            const bg =
+              currentSection === index
+                ? "bg-red-300"
+                : hoverSection === index
+                ? "bg-red-200"
+                : ""
+            return (
+              <div
+                key={index}
+                className={cn(bg, "w-[420px] absolute opacity-30 rounded-md")}
+                onMouseEnter={(e) => {
+                  e.stopPropagation()
+                  setHoverSection(index)
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation()
+                  selector.update(index)
+                  setFocusState(new Date().getTime())
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  selector.update(index)
+                }}
+                style={style}
+              ></div>
+            )
+          })}
+        </>
+      )
+    }
+    return null
+  }, [hoverSection, currentSection, letterPVos])
 
-function isChinese(char: string) {
-  return /^[\u4e00-\u9fa5]$/.test(char)
-}
+  const curSectionValue = useMemo(() => {
+    if (letter && currentSection !== undefined) {
+      const { sections } = letter
+      return sections[currentSection] ?? ""
+    }
+    return ""
+  }, [currentSection])
 
-function isChinesePunctuation(char: string) {
-  return /[\u3001\u3002\uFF0C\uFF1F\uFF01]/.test(char)
+  const [focusState, setFocusState] = useState(0)
+
+  const inputRender = useMemo(() => {
+    return (
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+      >
+        <InputerView
+          text={curSectionValue}
+          onDelete={onDelete}
+          onEnter={onEnter}
+          focusState={focusState}
+        />
+      </div>
+    )
+  }, [currentSection, focusState, curSectionValue])
+
+  return (
+    <>
+      <div
+        className={cn("bg-[#F3E7D9] w-[640px] relative")}
+        style={{
+          height: "800px",
+        }}
+        onClick={() => selector.update(-1)}
+      >
+        <div
+          className={cn(
+            `the_font_${font} the_font_none_smooth1`,
+            `bg-blue-3001`,
+            // "select-none",
+            "absolute flex flex-col left-[140px] top-[40px] w-[420px] text-[#31271C] text-[20px] leading-[30px]"
+          )}
+          onMouseLeave={() => setHoverSection(-1)}
+          style={{
+            height: "700px",
+          }}
+        >
+          {hoverSectionRender}
+          {letterRender}
+        </div>
+        <div className={cn("w-[60px]", `the_font_0002`)}>
+          {list.map((item) => {
+            return (
+              <div
+                key={item}
+                className={cn(
+                  font === item
+                    ? "bg-red-200  pl-2"
+                    : " pl-2 hover:bg-slate-200",
+                  "cursor-pointer"
+                )}
+                onClick={() => setFont(`${item}`)}
+              >
+                {item}
+              </div>
+            )
+          })}
+        </div>
+        {/* inputer */}
+        {inputRender}
+      </div>
+      <div className="h-[400px]"></div>
+    </>
+  )
 }
