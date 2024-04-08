@@ -16,22 +16,28 @@ export function KeyBinder({ onAction }: { onAction: (type: string) => void }) {
     if (!active) {
       // 如果没有焦点？
       // console.log(e)
-      let type = ""
+      let key = ""
       if (e.key === "Backspace") {
         console.log("out delete")
-        type = "DELETE"
+        key = "DELETE"
       } else if (e.key === "Enter") {
         console.log("out enter")
-        type = "ENTER"
-      } else if (e.key === "ArrowUp") {
+        key = "ENTER"
+      } else if (e.key === "ArrowUp" || e.key === "k") {
         console.log("用户按下了上箭头键")
-        type = "UP"
-      } else if (e.key === "ArrowDown") {
+        key = "UP"
+      } else if (e.key === "ArrowDown" || e.key === "j") {
         console.log("用户按下了下箭头键")
-        type = "DOWN"
+        key = "DOWN"
+      } else if (e.key === "Escape") {
+        console.log("Escape key pressed")
+        key = "ESC"
+      } else if (e.key === "i") {
+        key = "EDIT"
       }
-      if (type) {
-        onAction(type)
+
+      if (key) {
+        onAction(key)
         e.preventDefault()
       }
     }

@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef } from "react"
 
-import { Textarea } from "../ui/textarea"
 import { useInputerStore } from "@/client/stores/input-store"
 
 export function InputerView({ onEnter, onDelete }: any) {
@@ -130,6 +129,22 @@ export function InputerView({ onEnter, onDelete }: any) {
     }
   }
 
+  const textStyle = useMemo(() => {
+    if (value.length > 100) {
+      return {
+        height: "124px",
+      }
+    }
+    if (value.length > 60) {
+      return {
+        height: "100px",
+      }
+    }
+    return {
+      height: "56px",
+    }
+  }, [value])
+
   return (
     <div className="flex flex-row p-2">
       <div className="w-full sm:w-[360px] flex flex-col">
@@ -142,9 +157,9 @@ export function InputerView({ onEnter, onDelete }: any) {
           onChange={onChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className="flex min-h-[82px] w-full rounded-lg resize-none border border-input appearance-none bg-none px-3 py-2 text-[14px] disabled:opacity-50"
+          style={textStyle}
+          className="flex w-full rounded-lg bg-[rgba(255,255,255,.6)] px-2 py-0 resize-none appearance-none bg-none text-[16px]"
         />
-        <div className="h-[calc(env(safe-area-inset-bottom)-20px)]"></div>
       </div>
       <div className="w-[60px]"></div>
     </div>

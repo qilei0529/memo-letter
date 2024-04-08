@@ -29,7 +29,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
           const letter = getLetter(current ?? "")
           if (letter) {
             const { sections } = letter
-            if (n >= 0) {
+            if (n > -1) {
               if (n > sections.length) {
                 n = sections.length
               }
@@ -64,7 +64,6 @@ export const useLetterHook = ({ id }: { id: string }) => {
     if (current) {
       const letter = letterVos[current]
       const selector = selectorVos[current]
-      console.log("insert", section, selector.section, newLine)
       let at = selector?.section ?? letter?.sections.length
       let isUpdate = selector?.section !== undefined
       if (newLine) {
@@ -134,6 +133,7 @@ export function transLetterToPos(letter: string) {
     start: number
     end: number
   }[] = []
+
   sections.forEach((section, n) => {
     // 每一行 都增加一个 pvos
     let pItem = {
@@ -151,11 +151,11 @@ export function transLetterToPos(letter: string) {
           for (let i = len - 1; i >= 3; i--) {
             const text = section[i]
             x -= getWidth(text)
-            if (x > 41) {
+            if (x < 0) {
               // 这里 如果很长的话有点意思
               // 会有 bug
-              // x = 0
-              // y += 1
+              x = 42
+              y += 1
             }
 
             const pos = { x: x, y: y }
@@ -183,7 +183,6 @@ export function transLetterToPos(letter: string) {
             pItem.end = y
           }
           // 如果第一位是标点，就放到前一行的最后
-
           const pos = { x: x, y: y }
           const key = `${y}_${x}`
           list.push(key)
@@ -212,6 +211,7 @@ export function transLetterToPos(letter: string) {
     vos,
     list,
     pvos,
+    lines: y,
   }
 }
 

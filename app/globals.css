@@ -61,6 +61,10 @@
   -webkit-font-smoothing: none;
 }
 
+body {
+  @apply bg-[#6F727A];
+}
+
 @font-face {
   font-family: "MyCustomFont";
   src: url("/font.ttf") format("truetype");
