@@ -5,7 +5,6 @@ import { InputerView } from "./inputer"
 import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
 import { KeyBinder } from "./key-binder"
 import { useInputerStore } from "@/client/stores/input-store"
-
 const LETTER = `先生亲启：
   见字如面，好久不见！
   人与人的羁绊本就薄如蝉翼，相逢一程已是感激万分。
@@ -88,7 +87,7 @@ export const PaperView = () => {
               data-section={section}
               className={cn(
                 isEmpty ? "opacity-30" : "",
-                "absolute w-[20px] h-[30px]"
+                "absolute w-[20px] h-[30px] flex justify-center "
               )}
               onMouseEnter={(e) => {
                 e.stopPropagation()
@@ -173,6 +172,7 @@ export const PaperView = () => {
   }, [hoverSection, currentSection, letterPVos])
 
   const setInputValue = useInputerStore((state) => state.setValue)
+  const getSelector = useInputerStore((state) => state.getSelector)
   const inputShow = useInputerStore((state) => state.show)
   const toggleShow = useInputerStore((state) => state.toggleShow)
   const setInputAlign = useInputerStore((state) => state.setAlign)
@@ -212,24 +212,70 @@ export const PaperView = () => {
     )
   }, [currentSection, inputShow, letterPVos])
 
+  const inputStyle = useMemo(() => {
+    if (currentSection && letterPVos) {
+      const pvos = letterPVos[currentSection]
+      return {
+        top: `${pvos.end * 30 + 76}px`,
+      }
+    }
+    return {}
+  }, [currentSection, letterPVos])
+
+  const keyRender = useMemo(() => {
+    if (!letter) {
+      return null
+    }
+    return (
+      <KeyBinder
+        onAction={(type) => {
+          if (type === "ENTER") {
+            onEnter("", true)
+          } else if (type === "DELETE") {
+            onDelete(true)
+          } else if (type === "UP") {
+            // onDelete(true)
+            const selectorData = getSelector(letter.id)
+            const section = selectorData?.section
+            if (section !== undefined) {
+              selector.update(section - 1)
+            }
+          } else if (type === "DOWN") {
+            // onDelete(true)
+            console.log("down")
+            if (letter) {
+              const selectorData = getSelector(letter.id)
+              const section = selectorData?.section
+              if (section !== undefined) {
+                selector.update(section + 1)
+              } else {
+                selector.update(0)
+              }
+            }
+          }
+        }}
+      />
+    )
+  }, [letter])
+
   return (
     <>
       <div
         className={cn(
-          "relative w-[460px] sm:w-[520px] origin-top scale-[0.8] sm:scale-100 h-[560px] sm:h-[800px] "
+          "relative w-[460px] sm:w-[540px] h-[640px] sm:h-[800px] "
         )}
         onClick={() => {
           selector.update(-1)
           toggleShow(false)
         }}
       >
-        <div className="absolute w-[640px] bg-[#F3E7D9] top-0 left-[-100px] h-[800px] select-none"></div>
+        <div className="absolute w-[640px] bg-[#F3E7D9] top-0 left-[-80px] h-[800px] select-none"></div>
         <div
           className={cn(
             `the_font_${font} the_font_none_smooth1`,
             `bg-blue-3001 h-[700px]`,
             // "select-none",
-            "absolute flex flex-col left-[20px] sm:left-[50px] top-[40px] w-[420px] text-[#31271C] text-[20px] leading-[30px]"
+            "absolute flex flex-col left-[20px] sm:left-[60px] top-[40px] w-[420px] text-[#31271C] text-[20px] leading-[30px]"
           )}
           onMouseLeave={() => setHoverSection(-1)}
         >
@@ -237,10 +283,7 @@ export const PaperView = () => {
           {letterRender}
         </div>
         <div
-          className={cn(
-            "relative w-[60px] z-30 left-[-100px]",
-            `the_font_0002`
-          )}
+          className={cn("relative w-[60px] z-30 left-[-80px]", `the_font_0002`)}
         >
           {list.map((item) => {
             return (
@@ -260,26 +303,12 @@ export const PaperView = () => {
           })}
         </div>
         {/* inputer */}
-      </div>
-      <div className="fixed pointer-events-none flex flex-row w-[100%] bottom-0 sm:bottom-[40px] left-0  z-30">
-        <div className="flex-1"></div>
-        <div className="w-full sm:w-[520px] flex flex-row">
-          <div className="w-0 sm:w-[50px]"></div>
+        <div className="absolute left-[20px] sm:left-[60px]" style={inputStyle}>
           {inputRender}
-
-          <KeyBinder
-            onAction={(type) => {
-              if (type === "ENTER") {
-                onEnter("", true)
-              } else if (type === "DELETE") {
-                onDelete(true)
-              }
-            }}
-          />
+          {keyRender}
         </div>
-        <div className="flex-1"></div>
       </div>
-      <div className="sm:h-[200px]"></div>
+      <div className="sm:h-[100px]"></div>
     </>
   )
 }

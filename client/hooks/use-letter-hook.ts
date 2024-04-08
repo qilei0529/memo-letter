@@ -25,13 +25,21 @@ export const useLetterHook = ({ id }: { id: string }) => {
       value: selectorVos[current ?? ""],
       update: (index: number) => {
         if (current) {
-          if (index >= 0) {
-            setSelector(current, {
-              section: index,
-            })
-          } else {
-            // clear selector
-            setSelector(current, null)
+          let n = index
+          const letter = getLetter(current ?? "")
+          if (letter) {
+            const { sections } = letter
+            if (n >= 0) {
+              if (n > sections.length) {
+                n = sections.length
+              }
+              setSelector(current, {
+                section: n,
+              })
+            } else {
+              // clear selector
+              setSelector(current, null)
+            }
           }
         }
       },

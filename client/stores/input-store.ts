@@ -20,6 +20,7 @@ type InputState = {
 
 type IInputActions = {
   setSelector: (id: string, selector: ISelectorData | null) => void
+  getSelector: (id: string) => ISelectorData | null
 
   setValue: (value: string) => void
 
@@ -73,6 +74,11 @@ export const useInputerStore = create<InputState & IInputActions>()(
             selectorVos: vos,
           }
         })
+      },
+
+      getSelector(id) {
+        const { selectorVos } = get()
+        return selectorVos[id] ?? null
       },
 
       inputFocus(n) {
