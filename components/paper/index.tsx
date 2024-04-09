@@ -129,8 +129,15 @@ export const PaperView = () => {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    let isMobile = window.innerWidth < 640
-    setIsMobile(isMobile)
+    const checkMobile = () => {
+      let isMobile = window.innerWidth < 640
+      setIsMobile(isMobile)
+    }
+    window.addEventListener("resize", checkMobile)
+    checkMobile()
+    return () => {
+      window.removeEventListener("resize", checkMobile)
+    }
   }, [])
 
   const inputStyle = useMemo(() => {
