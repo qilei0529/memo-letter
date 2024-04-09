@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef } from "react"
 
 import { useInputerStore } from "@/client/stores/input-store"
+import { Icons } from "@/shared/icons"
+import { cn } from "@/lib/utils"
 
-export function InputerView({ onEnter, onDelete }: any) {
+export function InputerView({ onEnter, onDelete, onChangeValue }: any) {
   const textareaRef = useRef<any>(null)
   const activeRef = useRef<{ composition?: boolean }>({})
 
@@ -12,6 +14,7 @@ export function InputerView({ onEnter, onDelete }: any) {
   const setValue = useInputerStore((state) => state.setValue)
   const toggleActive = useInputerStore((state) => state.toggleActive)
   const toggleShow = useInputerStore((state) => state.toggleShow)
+  const setAlign = useInputerStore((state) => state.setAlign)
 
   const handleFocus = () => {
     toggleActive(true)
@@ -28,6 +31,12 @@ export function InputerView({ onEnter, onDelete }: any) {
     onEnter?.(text)
     // clear
     setValue("")
+  }
+
+  const handleChange = (str: string, align: string) => {
+    const RIGHT = "→  "
+    const text = `${align === "RIGHT" ? RIGHT : ""}${str}`
+    onChangeValue?.(text)
   }
 
   const handleKeyDown = (e: any) => {
@@ -146,8 +155,8 @@ export function InputerView({ onEnter, onDelete }: any) {
   }, [value])
 
   return (
-    <div className="flex flex-row p-2">
-      <div className="w-full sm:w-[360px] flex flex-col">
+    <div className="flex flex-row p-2 space-x-2">
+      <div className="w-full flex flex-col flex-1">
         <textarea
           ref={textareaRef}
           value={value}
@@ -158,10 +167,37 @@ export function InputerView({ onEnter, onDelete }: any) {
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={textStyle}
-          className="flex w-full rounded-lg bg-[rgba(255,255,255,.6)] px-2 py-0 resize-none appearance-none bg-none text-[16px]"
+          className="flex w-full rounded-lg bg-[rgba(255,255,255,.6)] px-2 resize-none appearance-none bg-none text-[16px] py-1"
         />
       </div>
-      <div className="w-[60px]"></div>
+      <div className="w-[48px] text-[#000000]">
+        <div
+          onClick={() => handleEnter(value)}
+          className="flex flex-col h-[32px] justify-center items-center text-[12px] text-blue-700 bg-blue-200 rounded-lg hover:bg-blue-300 cursor-pointer"
+        >
+          <div className="flex flex-row items-center justify-center ">
+            <Icons.write className="w-3.5 h-3.5 stroke-[3px]" />
+          </div>
+        </div>
+        <div className="flex flex-row pt-1">
+          <div className="flex-1"></div>
+          <div
+            onClick={() => {
+              const nextAlign = align === "RIGHT" ? "LEFT" : "RIGHT"
+              setAlign(nextAlign)
+              handleChange(value, nextAlign)
+            }}
+            className={cn(
+              align === "RIGHT"
+                ? "bg-red-200 hover:bg-red-300"
+                : "bg-gray-200 hover:bg-gray-300",
+              "w-5 h-5 flex flex-row items-center justify-center rounded-md cursor-pointer"
+            )}
+          >
+            <Icons.alignRight className="w-3.5 h-3.5 stroke-[2px]" />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -58,36 +58,36 @@ export const useLetterHook = ({ id }: { id: string }) => {
     }, 100)
   }, [id])
 
-  const insert = (section: string, newLine?: boolean) => {
+  const insert = (section: string, newLine?: boolean, isUpdate?: boolean) => {
     const { current, letterVos } = useLetterStore.getState()
     const { selectorVos } = useInputerStore.getState()
     if (current) {
       const letter = letterVos[current]
       const selector = selectorVos[current]
       let at = selector?.section ?? letter?.sections.length
-      let isUpdate = selector?.section !== undefined
+      let isNeedUpdate = selector?.section !== undefined
       if (newLine) {
-        isUpdate = false
+        isNeedUpdate = false
         at += 1
         insertSectionAt(current, "", at)
       } else {
         const lines =
           section.indexOf("\n") > -1 ? section.split("\n") : [section]
-
         lines.forEach((line, index) => {
-          insertSectionAt(current, line, at, index === 0 ? isUpdate : false)
+          insertSectionAt(current, line, at, index === 0 ? isNeedUpdate : false)
           at += 1
         })
       }
 
-      // 如果 是修改 当前不是最后一行？
-
       // 切换到新的一行
-      setSelector(current, {
-        section: at,
-      })
+      if (!isUpdate) {
+        setSelector(current, {
+          section: at,
+        })
+      }
     }
   }
+
   const remove = () => {
     const { current } = useLetterStore.getState()
     const { selectorVos } = useInputerStore.getState()
@@ -150,7 +150,8 @@ export function transLetterToPos(letter: string) {
           let sublist = []
           for (let i = len - 1; i >= 3; i--) {
             const text = section[i]
-            x -= getWidth(text)
+            const d = getWidth(text)
+            x -= d
             if (x < 0) {
               // 这里 如果很长的话有点意思
               // 会有 bug
@@ -165,6 +166,7 @@ export function transLetterToPos(letter: string) {
               pos: pos,
               text: text,
               section: n,
+              width: d,
             }
             vos[key] = item
           }
@@ -186,13 +188,15 @@ export function transLetterToPos(letter: string) {
           const pos = { x: x, y: y }
           const key = `${y}_${x}`
           list.push(key)
+          const d = getWidth(text)
           const item = {
             pos: pos,
             text: text,
             section: n,
+            width: d,
           }
           vos[key] = item
-          x += getWidth(text)
+          x += d
         }
       }
     }

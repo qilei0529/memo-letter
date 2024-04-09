@@ -5,6 +5,7 @@ import { InputerView } from "./inputer"
 import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
 import { KeyBinder } from "./key-binder"
 import { useInputerStore } from "@/client/stores/input-store"
+import { HelperView } from "./question"
 const LETTER = `先生亲启：
   见字如面，好久不见！
   人与人的羁绊本就薄如蝉翼，相逢一程已是感激万分。
@@ -49,6 +50,7 @@ export const PaperView = () => {
   const { letter, selector, insert, remove } = useLetterHook({ id: "" })
 
   const onEnter = (str: string, newLine: boolean) => insert(str, newLine)
+  const onUpdate = (str: string, newLine: boolean) => insert(str, newLine, true)
 
   const onDelete = (flag: boolean) => {
     remove()
@@ -114,7 +116,11 @@ export const PaperView = () => {
           }}
           className="w-[100%] sm:w-[420px] bg-[rgba(255,255,255,.4)] pointer-events-auto rounded-xl backdrop-blur border-[1px] border-[#ddd] shadow-2xl shadow-[rgba(0,0,0,.1)]"
         >
-          <InputerView onDelete={onDelete} onEnter={onEnter} />
+          <InputerView
+            onDelete={onDelete}
+            onEnter={onEnter}
+            onChangeValue={onUpdate}
+          />
         </div>
       </>
     )
@@ -232,14 +238,15 @@ export const PaperView = () => {
       <>
         {letterList.map((key) => {
           const item = letterVos[key]
-          const { text, pos, section } = item
+          const { text, pos, section, width } = item
           return (
             <span
               key={key}
               data-section={section}
               className={cn(
                 isEmpty ? "opacity-30" : "",
-                "absolute w-[20px] h-[30px] flex justify-center "
+                width === 1 ? "w-[10px] " : "w-[20px]",
+                "absolute h-[30px] flex justify-center "
               )}
               onMouseEnter={(e) => {
                 e.stopPropagation()
@@ -324,7 +331,7 @@ export const PaperView = () => {
               {/* tools */}
               <div
                 className={cn(
-                  "hidden sm:block absolute w-[60px] z-30 right-[-60px] top-[0px]",
+                  "hidden absolute w-[60px] z-30 right-[-60px] top-[0px]",
                   `the_font_0002`
                 )}
               >
@@ -357,6 +364,9 @@ export const PaperView = () => {
             {keyRender}
           </div>
         </div>
+      </div>
+      <div className="fixed right-4 top-4 w-8 h-8 ">
+        <HelperView />
       </div>
     </>
   )
