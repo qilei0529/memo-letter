@@ -170,7 +170,7 @@ export function InputerView({ onEnter, onDelete, onChangeValue }: any) {
           className="flex w-full rounded-lg bg-[rgba(255,255,255,.6)] px-2 resize-none appearance-none bg-none text-[16px] py-1"
         />
       </div>
-      <div className="w-[48px] text-[#000000]">
+      <div className="w-[42px] text-[#000000]">
         <div
           onClick={() => handleEnter(value)}
           className="flex flex-col h-[32px] justify-center items-center text-[12px] text-blue-700 bg-blue-200 rounded-lg hover:bg-blue-300 cursor-pointer"

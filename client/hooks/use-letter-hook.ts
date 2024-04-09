@@ -123,6 +123,12 @@ export const useLetterHook = ({ id }: { id: string }) => {
  * @param letter
  * @returns
  */
+
+enum Align {
+  left = "LEFT",
+  right = "RIGHT",
+}
+
 export function transLetterToPos(letter: string) {
   const vos: any = {}
   const list: string[] = []
@@ -134,71 +140,69 @@ export function transLetterToPos(letter: string) {
     end: number
   }[] = []
 
-  sections.forEach((section, n) => {
+  sections.forEach((line, n) => {
     // 每一行 都增加一个 pvos
     let pItem = {
       start: y,
       end: y,
     }
     pvos.push(pItem)
-    if (section.length) {
-      if (section.startsWith("→  ")) {
-        let len = section.length
-        if (len) {
-          x = 42
-          // 靠右显示
-          let sublist = []
-          for (let i = len - 1; i >= 3; i--) {
-            const text = section[i]
-            const d = getWidth(text)
-            x -= d
-            if (x < 0) {
-              // 这里 如果很长的话有点意思
-              // 会有 bug
-              x = 42
-              y += 1
-            }
 
-            const pos = { x: x, y: y }
-            const key = `${y}_${x}`
-            sublist.unshift(key)
-            const item = {
-              pos: pos,
-              text: text,
-              section: n,
-              width: d,
-            }
-            vos[key] = item
-          }
-          sublist.forEach((item) => {
-            list.push(item)
-          })
-        }
-      } else {
-        x = 0
-        for (let i = 0; i < section.length; i++) {
-          const text = section[i]
-          if (isChinesePunctuation(text)) {
-          } else if (x > 40) {
-            x = 0
-            y += 1
-            pItem.end = y
-          }
-          // 如果第一位是标点，就放到前一行的最后
-          const pos = { x: x, y: y }
-          const key = `${y}_${x}`
-          list.push(key)
-          const d = getWidth(text)
-          const item = {
-            pos: pos,
-            text: text,
-            section: n,
-            width: d,
-          }
+    let section = line
+    let align = Align.left
+    let RIGHT = "→  "
+    if (line.startsWith(RIGHT)) {
+      section = line.replace(RIGHT, "")
+      align = Align.right
+    }
+    if (section.length) {
+      x = 0
+      let lineData: any[] = []
+
+      const insertLine = (data: any[]) => {
+        data.forEach((item) => {
+          const { pos } = item
+          const key = `${pos.y}_${pos.x}`
           vos[key] = item
-          x += d
+          list.push(key)
+        })
+      }
+
+      for (let i = 0; i < section.length; i++) {
+        const text = section[i]
+        if (isChinesePunctuation(text)) {
+        } else if (x > 40) {
+          x = 0
+          y += 1
+          pItem.end = y
+          insertLine(lineData)
+          lineData = []
+        }
+        // 如果第一位是标点，就放到前一行的最后
+        const pos = { x: x, y: y }
+        const d = getWidth(text)
+        const item = {
+          pos: pos,
+          text: text,
+          section: n,
+          width: d,
+        }
+        lineData.push(item)
+        x += d
+      }
+      // reduce right
+      if (align === Align.right) {
+        const len = lineData.length
+        let x = 42
+        for (let i = len - 1; i >= 0; i--) {
+          const item = lineData[i]
+          const { pos, width } = item
+          x = x - width
+          const newPos = { x: x, y: pos.y }
+          item.pos = newPos
         }
       }
+      insertLine(lineData)
     }
     y += 1
   })
