@@ -7,6 +7,17 @@ import { Icons } from "@/shared/icons"
 
 const HELP_LIST = [
   {
+    title: "新增行",
+    tag: "Enter",
+  },
+  {
+    title: "编辑行",
+    tag: "Click x 2",
+  },
+  {
+    type: "line",
+  },
+  {
     title: "输入",
     tag: "cmd + Enter",
   },
@@ -46,6 +57,11 @@ export function HelperView() {
       >
         <div className="p-2 space-y-1 text-slate-600">
           {HELP_LIST.map((item, key) => {
+            if (item.type === "line") {
+              return (
+                <div key={key} className="h-[1px] mt-2 mb-2 bg-slate-200"></div>
+              )
+            }
             return (
               <div
                 key={key}
