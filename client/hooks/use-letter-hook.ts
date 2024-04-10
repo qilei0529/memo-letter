@@ -124,7 +124,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
  * @returns
  */
 
-enum Align {
+export enum Align {
   left = "LEFT",
   right = "RIGHT",
 }

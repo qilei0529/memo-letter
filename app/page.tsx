@@ -1,5 +1,5 @@
-import { PaperView } from "@/components/paper"
-import { HelperView } from "@/components/paper/helper"
+import { PaperView } from "@/components/paper/paper-view"
+import { HelperView } from "@/components/paper/helper-view"
 
 export default function Home(props: any) {
   return (
