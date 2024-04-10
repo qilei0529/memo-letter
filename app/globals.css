@@ -2,65 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-@font-face {
-  font-family: Pixel12;
-  src: url("/pixel-font-12.woff2?v=1.0") format('truetype');
-}
-@font-face {
-  font-family: Pixel10;
-  src: url("/pixel-font-10.woff2?v=1.0") format('truetype');
-}
-@font-face {
-  font-family: Pixel8;
-  src: url("/pixel-font-8.woff2?v=1.0") format('truetype');
-}
-.the_font_12 {
-  font-family: Pixel12, serif;
-  font-size: 18px;
+.the_font_none_smooth {
   -webkit-font-smoothing: none;
-}
-.the_font_10 {
-  font-family: Pixel10, serif;
-  font-size: 15px;
-  -webkit-font-smoothing: none;
-}
-.the_font_8 {
-  font-family: Pixel8, serif;
-  font-size: 12px;
-  -webkit-font-smoothing: none;
-}
-
-.editor {
-  background: none;
-  outline: none;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply bg-[#6F727A];
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+@font-face {
+  font-family: "MyCustomFont2";
+  src: url("/font2.ttf") format("truetype");
+}
+
+.the_font_0001 {
+  font-family: "MyCustomFont", serif;
+}
+
+.the_font_0002 {
+  font-family: "MyCustomFont2", serif;
 }
