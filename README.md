@@ -1,4 +1,4 @@
-# A project of make letter beauty
+# A project to make letter writing beautiful.
 
 the demo link [memo-letter.vercel.app](https://memo-letter.vercel.app)
 
