@@ -5,38 +5,12 @@ import { InputerView } from "./inputer"
 import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
 import { KeyBinder } from "./key-binder"
 import { useInputerStore } from "@/client/stores/input-store"
-import { HelperView } from "./question"
+
 const LETTER = `先生亲启：
   见字如面，好久不见！
-  人与人的羁绊本就薄如蝉翼，相逢一程已是感激万分。
-  曾经总抱怨原来人和人之间的关系浅薄，为什么没有绝对的永远，没有真正的来日方长好像舍弃，离别，放弃，总是充屎着人生，要去做一些不得不的决定，这些问题我想破了脑袋。
-  但是现在不这么想了，现在的我逢人就说，遇见的人，遇见的事情都有它的道理，像曾经遇见的人，带给你好的一切都还在影响你，虽然以后不同路了，但是陪伴你，成长过一段路，就已经很好了。没有所谓的来日方长，所以我们应过好现在。
-  清醒点，是你困住了自己，不是别人。
-  有些人出现的意义，也许只会教会你一些什么，学会云秀人与人之间只有一段路的缘分。
-
-
-
-→  如雪  
-→  2024.4.3  
 `
 
 export const PaperView = () => {
-  const list = [
-    "0001",
-    "0002",
-    "0003",
-    // "001",
-    // "002",
-    // "003",
-    // "004",
-    // "005",
-    // "006",
-    // "007",
-    // "008",
-    // "009",
-    // "010",
-  ]
-
   const [font, setFont] = useState("0002")
 
   const [hoverSection, setHoverSection] = useState(-1)
@@ -67,7 +41,7 @@ export const PaperView = () => {
       let letterBody = sections.join("\n")
       let isEmpty = false
       if (letterBody.length == 0) {
-        letterBody = "亲爱的先生："
+        letterBody = LETTER
         isEmpty = true
       }
       const { list, vos, pvos } = transLetterToPos(letterBody)
@@ -334,31 +308,6 @@ export const PaperView = () => {
                   {letterRender}
                 </div>
               </div>
-
-              {/* tools */}
-              <div
-                className={cn(
-                  "hidden absolute w-[60px] z-30 right-[-60px] top-[0px]",
-                  `the_font_0002`
-                )}
-              >
-                {list.map((item) => {
-                  return (
-                    <div
-                      key={item}
-                      className={cn(
-                        font === item
-                          ? "bg-red-200 pl-2"
-                          : " pl-2 hover:bg-slate-200",
-                        "cursor-pointer"
-                      )}
-                      onClick={() => setFont(`${item}`)}
-                    >
-                      {item}
-                    </div>
-                  )
-                })}
-              </div>
             </div>
           </div>
           <div className="sm:h-[100px]"></div>
@@ -371,9 +320,6 @@ export const PaperView = () => {
             {keyRender}
           </div>
         </div>
-      </div>
-      <div className="fixed right-4 top-4 w-8 h-8 ">
-        <HelperView />
       </div>
     </>
   )

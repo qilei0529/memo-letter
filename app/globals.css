@@ -2,61 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: Pixel12;
-  src: url("/pixel-font-12.woff2?v=1.0") format("truetype");
-}
-@font-face {
-  font-family: Pixel10;
-  src: url("/pixel-font-10.woff2?v=1.0") format("truetype");
-}
-@font-face {
-  font-family: Pixel8;
-  src: url("/pixel-font-8.woff2?v=1.0") format("truetype");
-}
-.font-8px-monospaced:lang(en) {
-  font-family: Pixel12, serif;
-}
-.the_font_12 {
-  font-family: Pixel12, serif;
-  font-size: 18px;
-  -webkit-font-smoothing: none;
-}
-.the_font_10 {
-  font-family: Pixel10, serif;
-  font-size: 15px;
-  -webkit-font-smoothing: none;
-}
-.the_font_8 {
-  font-family: Pixel8, serif;
-  font-size: 12px;
-  -webkit-font-smoothing: none;
-}
-.the_font_44 {
-  font-family: "ziqufengxinzi", serif;
-  -webkit-font-smoothing: none;
-  /* "Kyokasho",  "YRDZST-Light"*/
-  /* HanWangWCL02 */
-
-  /* "YRDZST-Medium" */
-
-  /* like */
-  /* "Mengshen-Handwritten" */
-  /* JasonWriting2 */
-  /* ziquchuangketie */
-}
-
-.the_font_000 {
-  font-family: serif;
-  /* -webkit-font-smoothing: none; */
-}
-
-.the_font_001 {
-  font-family: "", serif;
-  /* -webkit-font-smoothing: none; */
-  /* font-smooth: none; */
-  @apply font-bold;
-}
 .the_font_none_smooth {
   -webkit-font-smoothing: none;
 }
@@ -66,16 +11,8 @@ body {
 }
 
 @font-face {
-  font-family: "MyCustomFont";
-  src: url("/font.ttf") format("truetype");
-}
-@font-face {
   font-family: "MyCustomFont2";
   src: url("/font2.ttf") format("truetype");
-}
-@font-face {
-  font-family: "MyCustomFont3";
-  src: url("/font3.ttf") format("truetype");
 }
 
 .the_font_0001 {
@@ -84,49 +21,4 @@ body {
 
 .the_font_0002 {
   font-family: "MyCustomFont2", serif;
-}
-
-.the_font_0003 {
-  font-family: "MyCustomFont3", serif;
-}
-
-.the_font_002 {
-  font-family: "Mengshen-Handwritten", serif;
-}
-
-.the_font_003 {
-  font-family: "JasonHandwriting6-Regular", serif;
-}
-
-.the_font_004 {
-  font-family: "ziquchuangketie", serif;
-}
-.the_font_005 {
-  font-family: "ziquqingheti", serif;
-}
-.the_font_006 {
-  font-family: "ziqumanshuti", serif;
-}
-.the_font_007 {
-  font-family: "851tegakizatsu", serif;
-}
-.the_font_008 {
-  font-family: "FengKai-Light", serif;
-}
-.the_font_009 {
-  font-family: "HanziPenTC-W5", serif;
-}
-.the_font_010 {
-  font-family: "MLingWaiMedium-TC", serif;
-}
-.the_font_011 {
-  font-family: "HanWangWeiBeiMedium-Gb5", serif;
-}
-
-.editor {
-  background: none;
-  outline: none;
-}
-
-body {
 }
