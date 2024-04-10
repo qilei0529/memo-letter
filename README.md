@@ -2,6 +2,8 @@
 
 the demo link [memo-letter.vercel.app](https://memo-letter.vercel.app)
 
+have fun
+
 ## Getting Started
 
 ```bash
