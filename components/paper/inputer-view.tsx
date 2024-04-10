@@ -21,7 +21,7 @@ export function InputerView({ onEnter, onDelete, onChangeValue }: any) {
         height: "124px",
       }
     }
-    if (value.length > 60) {
+    if (value.length > 50) {
       return {
         height: "100px",
       }
