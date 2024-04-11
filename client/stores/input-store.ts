@@ -1,13 +1,6 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
-
-type ISelectorData = {
-  section: number
-}
 
 type InputState = {
-  selectorVos: { [key: string]: ISelectorData }
-
   value: string
 
   active: boolean
@@ -19,9 +12,6 @@ type InputState = {
 }
 
 type IInputActions = {
-  setSelector: (id: string, selector: ISelectorData | null) => void
-  getSelector: (id: string) => ISelectorData | null
-
   setValue: (value: string) => void
 
   toggleShow: (show: boolean) => void
@@ -38,8 +28,6 @@ export const useInputerStore = create<InputState & IInputActions>()(
     return {
       show: false,
 
-      selectorVos: {},
-
       value: "",
 
       active: false,
@@ -48,38 +36,12 @@ export const useInputerStore = create<InputState & IInputActions>()(
 
       focusTimeStamp: 0,
 
-      setValue: (value) =>
-        set((state) => {
-          // const RIGHT = "→  "
-          // if (value.startsWith(RIGHT)) {
-          //   return { value: value.replace(RIGHT, ""), alignRight: true }
-          // }
-          return { value }
-        }),
+      setValue: (value) => set((state) => ({ value })),
 
       setAlign: (align) => set((state) => ({ align })),
 
       toggleShow: (show) => set((state) => ({ show })),
       toggleActive: (active) => set((state) => ({ active })),
-
-      setSelector(id, selector) {
-        return set((state) => {
-          const vos = { ...state.selectorVos }
-          if (selector) {
-            vos[id] = selector
-          } else {
-            delete vos[id]
-          }
-          return {
-            selectorVos: vos,
-          }
-        })
-      },
-
-      getSelector(id) {
-        const { selectorVos } = get()
-        return selectorVos[id] ?? null
-      },
 
       inputFocus(n) {
         set({

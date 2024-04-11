@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react"
 import { useInputerStore } from "../stores/input-store"
 import { Align } from "./use-letter-hook"
 
-const RIGHT = "→  "
+export const RIGHT = "→  "
 
 export const useInputerHook = ({ onEnter, onDelete, onChangeValue }: any) => {
   const textareaRef = useRef<any>(null)

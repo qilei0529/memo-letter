@@ -44,7 +44,6 @@ export const useLetterStore = create<ILetterState & ILetterActions>()(
     (set, get) => {
       return {
         current: undefined,
-        selectorVos: {},
         letterVos: {},
         letters: [],
 

@@ -1,7 +1,14 @@
 import { useEffect, useMemo } from "react"
 import { useLetterStore } from "../stores/letter-store"
 import { useInputerStore } from "../stores/input-store"
+import { RIGHT } from "./use-inputer-hook"
+import { useSelectStore } from "../stores/select-store"
 
+/**
+ * letter
+ * @param param0
+ * @returns
+ */
 export const useLetterHook = ({ id }: { id: string }) => {
   const current = useLetterStore((state) => state.current)
   const letterVos = useLetterStore((state) => state.letterVos)
@@ -13,38 +20,11 @@ export const useLetterHook = ({ id }: { id: string }) => {
   const insertSectionAt = useLetterStore((state) => state.insertSectionAt)
   const removeSectionAt = useLetterStore((state) => state.removeSectionAt)
 
-  const selectorVos = useInputerStore((state) => state.selectorVos)
-  const setSelector = useInputerStore((state) => state.setSelector)
+  const updateSelector = useSelectStore((state) => state.updateSelector)
 
   const letter = useMemo(() => {
     return getLetter(current ?? "")
   }, [current, letterVos])
-
-  const selector = useMemo(() => {
-    return {
-      value: selectorVos[current ?? ""],
-      update: (index: number) => {
-        if (current) {
-          let n = index
-          const letter = getLetter(current ?? "")
-          if (letter) {
-            const { sections } = letter
-            if (n > -1) {
-              if (n > sections.length) {
-                n = sections.length
-              }
-              setSelector(current, {
-                section: n,
-              })
-            } else {
-              // clear selector
-              setSelector(current, null)
-            }
-          }
-        }
-      },
-    }
-  }, [current, selectorVos])
 
   useEffect(() => {
     setTimeout(() => {
@@ -60,7 +40,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
 
   const insert = (section: string, newLine?: boolean, isUpdate?: boolean) => {
     const { current, letterVos } = useLetterStore.getState()
-    const { selectorVos } = useInputerStore.getState()
+    const { selectorVos } = useSelectStore.getState()
     if (current) {
       const letter = letterVos[current]
       const selector = selectorVos[current]
@@ -81,7 +61,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
 
       // 切换到新的一行
       if (!isUpdate) {
-        setSelector(current, {
+        updateSelector(current, {
           section: at,
         })
       }
@@ -90,7 +70,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
 
   const remove = () => {
     const { current } = useLetterStore.getState()
-    const { selectorVos } = useInputerStore.getState()
+    const { selectorVos } = useSelectStore.getState()
     if (current) {
       const selector = selectorVos[current]
       if (selector) {
@@ -102,7 +82,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
           if (newSectionIndex < 0) {
             newSectionIndex = 0
           }
-          setSelector(current, {
+          updateSelector(current, {
             section: newSectionIndex,
           })
         }
@@ -114,7 +94,6 @@ export const useLetterHook = ({ id }: { id: string }) => {
     letter,
     insert,
     remove,
-    selector,
   }
 }
 
@@ -129,98 +108,158 @@ export enum Align {
   right = "RIGHT",
 }
 
+export type BoxItem = {
+  section: number
+  start: number
+  end: number
+}
+
+export type pageItem = {
+  boxs: BoxItem[]
+  list: string[]
+  vos: { [key: string]: blockItem }
+  start: number
+}
+
+type blockItem = {
+  section: number
+  pos: { x: number; y: number }
+  text: string
+  size: number
+}
+
 export function transLetterToPos(letter: string) {
-  const vos: any = {}
-  const list: string[] = []
+  // 信 页面列表
+  const pages: pageItem[] = []
+
   let sections = letter.split("\n")
-  let x = 0
-  let y = 0
-  const pvos: {
-    start: number
-    end: number
-  }[] = []
 
-  sections.forEach((line, n) => {
-    // 每一行 都增加一个 pvos
-    let pItem = {
-      start: y,
-      end: y,
+  let pointX = 0
+  let pointY = 0
+
+  let page: pageItem = {
+    boxs: [],
+    list: [],
+    vos: {},
+    start: 0,
+  }
+
+  const createPage = (section: number) => {
+    page = {
+      boxs: [],
+      list: [],
+      vos: {},
+      start: section,
     }
-    pvos.push(pItem)
+    pointY = 0
+    pages.push(page)
+  }
 
-    let section = line
+  createPage(0)
+
+  // page size
+  const pageSize = 23 // is +1
+  // each
+  sections.forEach((line, index) => {
+    // 每一行 都增加一个 box
+    let box: BoxItem = {
+      start: pointY,
+      end: pointY,
+      section: index,
+    }
+    page.boxs.push(box)
+
+    // 处理 单行字
+    let sectionText = line
+
+    // 对齐
     let align = Align.left
-    let RIGHT = "→  "
+    // 处理 右对齐
     if (line.startsWith(RIGHT)) {
-      section = line.replace(RIGHT, "")
+      sectionText = line.replace(RIGHT, "")
       align = Align.right
     }
-    if (section.length) {
-      x = 0
-      let lineData: any[] = []
+    // 循环 每个字
+    if (sectionText.length) {
+      // 缓存 字 列表
+      let tempList: any[] = []
+      // 指针
+      pointX = 0
 
-      const insertLine = (data: any[]) => {
-        data.forEach((item) => {
-          const { pos } = item
-          const key = `${pos.y}_${pos.x}`
-          vos[key] = item
-          list.push(key)
-        })
-      }
-
-      for (let i = 0; i < section.length; i++) {
-        const text = section[i]
+      for (let i = 0; i < sectionText.length; i++) {
+        const text = sectionText[i]
+        // 如果是中文标点 在最后的时候不处理，防止标点在下一行的第一位。
         if (isChinesePunctuation(text)) {
-        } else if (x > 40) {
-          x = 0
-          y += 1
-          pItem.end = y
-          insertLine(lineData)
-          lineData = []
+          // do not create new line
+        } else if (pointX > 40) {
+          // 新建 新行
+          pointX = 0
+          pointY += 1
+
+          if (pointY > pageSize) {
+            // create a new page
+            createPage(index + 1)
+          }
+
+          // update box.end
+          box.end = pointY
+          insertLine(tempList, page)
+          tempList = []
         }
-        // 如果第一位是标点，就放到前一行的最后
-        const pos = { x: x, y: y }
         const d = getWidth(text)
-        const item = {
-          pos: pos,
+        const item: blockItem = {
+          pos: { x: pointX, y: pointY },
           text: text,
-          section: n,
-          width: d,
+          section: index,
+          size: d,
         }
-        lineData.push(item)
-        x += d
+        tempList.push(item)
+        pointX += d
       }
       // reduce right
       if (align === Align.right) {
-        const len = lineData.length
+        const len = tempList.length
         let x = 42
         for (let i = len - 1; i >= 0; i--) {
-          const item = lineData[i]
-          const { pos, width } = item
-          x = x - width
+          const item = tempList[i]
+          const { pos, size } = item
+          x = x - size
           const newPos = { x: x, y: pos.y }
           item.pos = newPos
         }
       }
-      insertLine(lineData)
+      insertLine(tempList, page)
     }
-    y += 1
+    // 处理 一行后 增加 y 的值
+    pointY += 1
+
+    if (pointY > pageSize) {
+      createPage(index + 1)
+    }
   })
 
   // 最后再加一行用于新增
   if (sections.length) {
-    pvos.push({
-      start: y,
-      end: y,
+    page.boxs.push({
+      start: pointY,
+      end: pointY,
+      section: sections.length,
     })
   }
 
   return {
-    vos,
-    list,
-    pvos,
-    lines: y,
+    pages,
   }
+}
+
+// 插入 数据 到 vos 和 list
+const insertLine = (data: any[], target: any) => {
+  data.forEach((item) => {
+    const { pos } = item
+    const key = `${pos.y}_${pos.x}`
+    target.vos[key] = item
+    target.list.push(key)
+  })
 }
 
 function getWidth(char: string) {
