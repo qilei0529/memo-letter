@@ -97,8 +97,7 @@ export function PaperItemContent({
           }}
           onDoubleClick={(item) => {
             selector.update(item.section)
-            inputFocus()
-            toggleShow(true)
+            selector.showInput()
           }}
         />
       )
@@ -132,8 +131,7 @@ export function PaperItemContent({
               onDoubleClick={(e) => {
                 e.stopPropagation()
                 selector.update(section)
-                inputFocus()
-                toggleShow(true)
+                selector.showInput()
                 updateHoverSection()
               }}
               style={{

@@ -2,6 +2,8 @@ import { useMemo } from "react"
 import { useSelectStore } from "../stores/select-store"
 import { useLetterStore } from "../stores/letter-store"
 import { useInputerStore } from "../stores/input-store"
+import { Align } from "./use-letter-hook"
+import { RIGHT } from "./use-inputer-hook"
 
 export const useSelectHook = () => {
   // letter
@@ -16,8 +18,20 @@ export const useSelectHook = () => {
   // input
   const toggleShow = useInputerStore((state) => state.toggleShow)
   const inputFocus = useInputerStore((state) => state.inputFocus)
+  const setInputAlign = useInputerStore((state) => state.setAlign)
+  const setInputValue = useInputerStore((state) => state.setValue)
 
-  const pageSize = 20
+  const updateInputValue = (section: number) => {
+    const letter = getLetter(current ?? "")
+    if (letter) {
+      const { sections } = letter
+      let text = sections[section] ?? ""
+      let align = text.startsWith(RIGHT)
+
+      setInputAlign(align ? Align.right : Align.left)
+      setInputValue(text.replace(RIGHT, ""))
+    }
+  }
 
   const selector = useMemo(() => {
     return {
@@ -41,10 +55,11 @@ export const useSelectHook = () => {
               // clear selector
               setSelector(current, null)
             }
+
+            updateInputValue(section)
           }
         }
       },
-
       showInput: () => {
         toggleShow(true)
         inputFocus()

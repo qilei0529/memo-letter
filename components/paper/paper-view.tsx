@@ -1,33 +1,28 @@
 "use client"
-import { cn } from "@/lib/utils"
-import { ReactNode, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { InputerView } from "./inputer-view"
-import {
-  Align,
-  BoxItem,
-  transLetterToPos,
-  useLetterHook,
-} from "@/client/hooks/use-letter-hook"
+import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
 import { KeyBinderView } from "./key-binder-view"
 import { useInputerStore } from "@/client/stores/input-store"
-import { RIGHT } from "@/client/hooks/use-inputer-hook"
 import { useScreenHook } from "@/client/hooks/use-screen-hook"
-import { ISelectorData, useSelectStore } from "@/client/stores/select-store"
 import { PaperLayout } from "./layout"
 import { PapeWapperView } from "./paper-wrapper-view"
 import { useSelectHook } from "@/client/hooks/use-select-hook"
 import { PaperItemContent } from "./pager-content-view"
+import { useFontHook } from "@/client/hooks/use-font-hook"
 
 const LETTER = `先生亲启：
   见字如面，好久不见！
 `
 
 export const PaperView = () => {
+  // screen
   const { isMobile } = useScreenHook()
-  const [font, setFont] = useState("0002")
+
+  // font
+  const { font } = useFontHook()
 
   const inputShow = useInputerStore((state) => state.show)
-  const toggleShow = useInputerStore((state) => state.toggleShow)
   const inputFocus = useInputerStore((state) => state.inputFocus)
 
   const { letter, insert, remove } = useLetterHook({ id: "" })
@@ -103,7 +98,6 @@ export const PaperView = () => {
   const inputStyle = useMemo(() => {
     if (selector.value && pages.length > 0) {
       const { section } = selector.value
-      console.log("input section", section)
       // length
       if (pages.length) {
         const pageIndex = pages.findLastIndex((item) => {
@@ -181,7 +175,7 @@ export const PaperView = () => {
         })}
       </>
     )
-  }, [pages])
+  }, [pages, font])
 
   return (
     <PaperLayout
