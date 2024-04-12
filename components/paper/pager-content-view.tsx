@@ -80,8 +80,6 @@ export function PaperItemContent({
   isEmpty?: boolean
 }) {
   const updateHoverSection = useSelectStore((state) => state.updateHoverSection)
-  const inputFocus = useInputerStore((state) => state.inputFocus)
-  const toggleShow = useInputerStore((state) => state.toggleShow)
 
   const { selector } = useSelectHook()
   const hoverSectionRender = useMemo(() => {
@@ -122,7 +120,7 @@ export function PaperItemContent({
               )}
               onMouseEnter={(e) => {
                 e.stopPropagation()
-                updateHoverSection(`${pageIndex}_${section}`)
+                updateHoverSection(`${section}`)
               }}
               onClick={(e) => {
                 e.stopPropagation()
