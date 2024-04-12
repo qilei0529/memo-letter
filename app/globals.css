@@ -11,14 +11,10 @@ body {
 }
 
 @font-face {
-  font-family: "MyCustomFont2";
+  font-family: "FontSystem";
   src: url("/font2.ttf") format("truetype");
 }
 
-.the_font_0001 {
-  font-family: "MyCustomFont", serif;
-}
-
-.the_font_0002 {
-  font-family: "MyCustomFont2", serif;
+.the_font_system {
+  font-family: "FontSystem", serif;
 }

@@ -47,13 +47,13 @@ export function HelperView() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className="w-8 h-8 bg-white rounded-2xl flex flex-row items-center justify-center text-slate-400 hover:text-slate-600">
+        <div className="w-8 h-8 bg-white rounded-2xl flex flex-row items-center justify-center text-slate-400 hover:text-gray-600 cursor-pointer">
           <Icons.question className="relative w-5 h-5 top-[-1px] right-[-1px]" />
         </div>
       </PopoverTrigger>
       <PopoverContent
         side="bottom"
-        className="shadow-2xl p-0 mt-[10px] mr-[16px] border-slate-200 bg-slate-50 rounded-lg w-[160px]"
+        className="shadow-2xl p-0 mt-[-36px] mr-[56px] border-slate-200 bg-slate-50 rounded-lg w-[160px]"
       >
         <div className="p-2 space-y-1 text-slate-600">
           {HELP_LIST.map((item, key) => {
