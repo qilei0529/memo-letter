@@ -4,12 +4,16 @@ import {
   MessageCircleQuestion,
   BookA,
   LucideProps,
+  Download,
+  Loader2,
 } from "lucide-react"
 
 export const Icons = {
   write: Pen,
   alignRight: AlignRight,
   font: BookA,
+  download: Download,
+  spinner: Loader2,
   github: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

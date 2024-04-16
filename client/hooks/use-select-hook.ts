@@ -97,5 +97,6 @@ export const useSelectHook = () => {
 
   return {
     selector,
+    updateInputValue,
   }
 }

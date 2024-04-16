@@ -10,6 +10,7 @@ import { PapeWapperView } from "./paper-wrapper-view"
 import { useSelectHook } from "@/client/hooks/use-select-hook"
 import { PaperItemContent } from "./pager-content-view"
 import { useFontHook } from "@/client/hooks/use-font-hook"
+import { PaperCanvas } from "./paper-canvas"
 
 const LETTER = `先生亲启：
   见字如面，好久不见！
@@ -29,8 +30,11 @@ export const PaperView = () => {
 
   const { selector } = useSelectHook()
 
-  const onEnter = (str: string, newLine: boolean) => insert(str, newLine)
-  const onUpdate = (str: string, newLine: boolean) => insert(str, newLine, true)
+  const onEnter = (str: string, newLine: boolean) =>
+    insert(str, newLine, (section) => {
+      selector.update(section)
+    })
+  const onUpdate = (str: string, newLine: boolean) => insert(str, newLine)
 
   const onDelete = (flag: boolean) => {
     remove()
@@ -161,8 +165,17 @@ export const PaperView = () => {
         {pages.map((page, index) => {
           const { boxs, list, vos } = page
           return (
-            <PapeWapperView key={index} isMobile={isMobile} font={font}>
+            <PapeWapperView key={index} isMobile={isMobile}>
               <PaperItemContent
+                index={index}
+                start={page.start}
+                letterBoxs={boxs}
+                letterList={list}
+                letterVos={vos}
+                isEmpty={isEmpty}
+                font={font}
+              />
+              <PaperCanvas
                 index={index}
                 start={page.start}
                 letterBoxs={boxs}

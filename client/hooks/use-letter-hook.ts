@@ -38,7 +38,11 @@ export const useLetterHook = ({ id }: { id: string }) => {
     }, 100)
   }, [id])
 
-  const insert = (section: string, newLine?: boolean, isUpdate?: boolean) => {
+  const insert = (
+    section: string,
+    newLine?: boolean,
+    next?: (section: number) => void
+  ) => {
     const { current, letterVos } = useLetterStore.getState()
     const { selectorVos } = useSelectStore.getState()
     if (current) {
@@ -60,11 +64,7 @@ export const useLetterHook = ({ id }: { id: string }) => {
       }
 
       // 切换到新的一行
-      if (!isUpdate) {
-        updateSelector(current, {
-          section: at,
-        })
-      }
+      next?.(at)
     }
   }
 
@@ -114,14 +114,14 @@ export type BoxItem = {
   end: number
 }
 
-export type pageItem = {
+export type PageItem = {
   boxs: BoxItem[]
   list: string[]
-  vos: { [key: string]: blockItem }
+  vos: { [key: string]: BlockItem }
   start: number
 }
 
-type blockItem = {
+export type BlockItem = {
   section: number
   pos: { x: number; y: number }
   text: string
@@ -130,14 +130,14 @@ type blockItem = {
 
 export function transLetterToPos(letter: string) {
   // 信 页面列表
-  const pages: pageItem[] = []
+  const pages: PageItem[] = []
 
   let sections = letter.split("\n")
 
   let pointX = 0
   let pointY = 0
 
-  let page: pageItem = {
+  let page: PageItem = {
     boxs: [],
     list: [],
     vos: {},
@@ -207,7 +207,7 @@ export function transLetterToPos(letter: string) {
           tempList = []
         }
         const d = getWidth(text)
-        const item: blockItem = {
+        const item: BlockItem = {
           pos: { x: pointX, y: pointY },
           text: text,
           section: index,
@@ -272,10 +272,15 @@ function getWidth(char: string) {
   return 1
 }
 
-function isChinese(char: string) {
+export function isChinese(char: string) {
   return /^[\u4e00-\u9fa5]$/.test(char)
 }
 
-function isChinesePunctuation(char: string) {
+export function isChinesePunctuation(char: string) {
   return /[\u3001\u3002\uFF0C\uFF1F\uFF01]/.test(char)
+}
+
+export function isNormalText(char: string) {
+  const regex = /^[a-zA-Z0-9]*$/
+  return regex.test(char)
 }

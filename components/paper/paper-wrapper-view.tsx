@@ -4,10 +4,8 @@ import { ReactNode } from "react"
 export function PapeWapperView({
   children,
   isMobile,
-  font,
 }: {
   isMobile: boolean
-  font: string
   children: ReactNode
 }) {
   return (
@@ -30,7 +28,7 @@ export function PapeWapperView({
       <div className="w-[332px] sm:w-full relative">
         <div
           className={cn(
-            `absolute the_font_${font} the_font_none_smooth1`,
+            `absolute the_font_none_smooth1`,
             "origin-top-left scale-[0.8] sm:scale-100",
             isMobile ? "left-[0px] top-[32px]" : "left-[160px] top-[40px]",
             "flex flex-col w-[420px] text-[#31271C] text-[20px] leading-[30px]"

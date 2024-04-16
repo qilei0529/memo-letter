@@ -3,6 +3,7 @@ import { HelperView } from "@/components/paper/helper-view"
 import { FontWidget } from "@/components/font/font-widget"
 import Link from "next/link"
 import { Icons } from "@/shared/icons"
+import { IconExport } from "@/components/export/icon-export"
 
 Link
 export default function Home(props: any) {
@@ -21,6 +22,7 @@ export default function Home(props: any) {
           >
             <Icons.github className="relative w-5 h-5" />
           </Link>
+          <IconExport />
         </div>
       </div>
     </div>

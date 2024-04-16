@@ -16,27 +16,6 @@ export const useFontHook = () => {
     })
   }
 
-  useEffect(() => {
-    const fontItem4 = {
-      id: "0004",
-      name: "AB",
-    }
-    const fontItem = {
-      id: "0003",
-      name: "JYY",
-    }
-    const fontItem2 = {
-      id: "0002",
-      name: "Font002",
-    }
-    // setFont(fontItem.id)
-
-    // font.load().then(function () {
-    //   console.log("Font002 has loaded.")
-    //   setFont(fontItem.id)
-    // })
-  }, [])
-
   const list = useMemo(() => {
     return fontList.map((key: string) => {
       return fontVos[key]

@@ -71,6 +71,7 @@ export function PaperItemContent({
   letterList,
   letterVos,
   isEmpty,
+  font,
 }: {
   index: number
   start: number
@@ -78,6 +79,7 @@ export function PaperItemContent({
   letterList: string[]
   letterVos: any
   isEmpty?: boolean
+  font?: string
 }) {
   const updateHoverSection = useSelectStore((state) => state.updateHoverSection)
 
@@ -116,7 +118,8 @@ export function PaperItemContent({
               className={cn(
                 isEmpty ? "opacity-30" : "",
                 size === 1 ? "w-[10px] " : "w-[20px]",
-                "absolute h-[30px] flex justify-center "
+                `the_font_${font}`,
+                "absolute h-[30px] flex justify-center text-transparent"
               )}
               onMouseEnter={(e) => {
                 e.stopPropagation()

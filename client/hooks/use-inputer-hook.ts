@@ -10,7 +10,6 @@ export const useInputerHook = ({ onEnter, onDelete, onChangeValue }: any) => {
 
   const value = useInputerStore((state) => state.value)
   const align = useInputerStore((state) => state.align)
-  const setAlign = useInputerStore((state) => state.setAlign)
   const focusTimeStamp = useInputerStore((state) => state.focusTimeStamp)
   const setValue = useInputerStore((state) => state.setValue)
   const toggleActive = useInputerStore((state) => state.toggleActive)
