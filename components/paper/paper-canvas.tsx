@@ -8,6 +8,7 @@ import {
   isNormalText,
 } from "@/client/hooks/use-letter-hook"
 import { useEffect, useRef, useState } from "react"
+import { cn } from "@/lib/utils"
 
 export function PaperCanvas({
   index: pageIndex,
@@ -42,7 +43,6 @@ export function PaperCanvas({
       // ctx.fillText("Hello, World!", 50, 50)
       const offset = { x: 50, y: 63 }
       const ratio = 2
-
       ctx.clearRect(0, 0, size.width * ratio, size.height * ratio)
       data.forEach((item) => {
         const { pos } = item
@@ -96,7 +96,10 @@ export function PaperCanvas({
     >
       {status === "READY" ? (
         <canvas
-          className="paper-canvas w-full h-full"
+          className={cn(
+            isEmpty ? "opacity-35" : "",
+            "paper-canvas w-full h-full"
+          )}
           ref={canvasRef}
           width={size.width * 2}
           height={size.height * 2}

@@ -188,7 +188,7 @@ export const PaperView = () => {
         })}
       </>
     )
-  }, [pages, font])
+  }, [pages, font, isEmpty])
 
   return (
     <PaperLayout
