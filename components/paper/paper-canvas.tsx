@@ -131,7 +131,7 @@ export function PaperCanvas({
         </span>
       </div>
     )
-  }, [status])
+  }, [status, isEmpty])
 
   return (
     <div
