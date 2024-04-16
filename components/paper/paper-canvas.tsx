@@ -7,7 +7,7 @@ import {
   isChinesePunctuation,
   isNormalText,
 } from "@/client/hooks/use-letter-hook"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 
 export function PaperCanvas({
@@ -79,22 +79,40 @@ export function PaperCanvas({
   }, [status])
 
   useEffect(() => {
-    var font = new FontFaceObserver("FontSystem")
-    font.load().then(function () {
-      console.log("FontSystem has loaded.")
-      setStatus("READY")
-    })
+    let count = 0
+    const init = async () => {
+      var font = new FontFaceObserver("FontSystem")
+      font
+        .load()
+        .then(function () {
+          console.log("FontSystem has loaded.")
+          setStatus("READY")
+        })
+        .catch(() => {
+          // FontFaceObserver 会有一个 3 秒超时检测
+          console.log("error load", count)
+          if (count < 3) {
+            init()
+          } else {
+            setStatus("ERROR")
+          }
+        })
+    }
+    init()
   }, [])
 
-  return (
-    <div
-      style={{
-        width: size.width,
-        height: size.height,
-      }}
-      className="absolute top-[-40px] left-[-40px] pointer-events-none"
-    >
-      {status === "READY" ? (
+  const render = useMemo(() => {
+    if (status === "ERROR") {
+      return (
+        <div className="w-full h-[400px] flex flex-row items-center justify-center">
+          <span className="text-[14px] bg-opacity-50 bg-red-200 px-2 rounded-md text-slate-600 text-opacity-50">
+            字体加载异常，请刷新重试。
+          </span>
+        </div>
+      )
+    }
+    if (status === "READY") {
+      return (
         <canvas
           className={cn(
             isEmpty ? "opacity-35" : "",
@@ -104,13 +122,26 @@ export function PaperCanvas({
           width={size.width * 2}
           height={size.height * 2}
         />
-      ) : (
-        <div className="w-full h-[400px] flex flex-row items-center justify-center">
-          <span className="text-[14px] bg-opacity-50 bg-red-200 px-2 rounded-md text-slate-600 text-opacity-50">
-            字体加载中...
-          </span>
-        </div>
-      )}
+      )
+    }
+    return (
+      <div className="w-full h-[400px] flex flex-row items-center justify-center">
+        <span className="text-[14px] bg-opacity-50 bg-red-200 px-2 rounded-md text-slate-600 text-opacity-50">
+          字体加载中...
+        </span>
+      </div>
+    )
+  }, [status])
+
+  return (
+    <div
+      style={{
+        width: size.width,
+        height: size.height,
+      }}
+      className="absolute top-[-40px] left-[-40px] pointer-events-none"
+    >
+      {render}
     </div>
   )
 }
