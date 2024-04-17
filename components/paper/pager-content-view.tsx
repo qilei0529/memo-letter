@@ -93,7 +93,7 @@ export function PaperItemContent({
           boxs={letterBoxs}
           onBoxClick={(item) => {
             selector.update(item.section)
-            console.log(item)
+            selector.hideInput()
           }}
           onDoubleClick={(item) => {
             selector.update(item.section)
@@ -108,12 +108,12 @@ export function PaperItemContent({
   const letterRender = useMemo(() => {
     return (
       <>
-        {letterList.map((key) => {
-          const item = letterVos[key]
+        {letterList.map((letterKey) => {
+          const item = letterVos[letterKey]
           const { text, pos, section, size } = item
           return (
             <span
-              key={key}
+              key={letterKey}
               data-section={section}
               className={cn(
                 isEmpty ? "opacity-30" : "",
@@ -127,11 +127,24 @@ export function PaperItemContent({
               }}
               onClick={(e) => {
                 e.stopPropagation()
-                selector.update(section)
+                // 获取 当前 位置
+                const m = letterList.filter((key) => {
+                  const o = letterVos[key]
+                  return o.section === item.section
+                })
+                const index = m.findIndex((key) => key === letterKey)
+                selector.update(section, index)
+                selector.hideInput()
               }}
               onDoubleClick={(e) => {
                 e.stopPropagation()
-                selector.update(section)
+                // 获取 当前 位置
+                const m = letterList.filter((key) => {
+                  const o = letterVos[key]
+                  return o.section === item.section
+                })
+                const index = m.findIndex((key) => key === letterKey)
+                selector.update(section, index)
                 selector.showInput()
                 updateHoverSection()
               }}

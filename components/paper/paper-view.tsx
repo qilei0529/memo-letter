@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { InputerView } from "./inputer-view"
 import { transLetterToPos, useLetterHook } from "@/client/hooks/use-letter-hook"
 import { KeyBinderView } from "./key-binder-view"
@@ -26,7 +26,18 @@ export const PaperView = () => {
   const inputShow = useInputerStore((state) => state.show)
   const inputFocus = useInputerStore((state) => state.inputFocus)
 
-  const { letter, insert, remove } = useLetterHook({ id: "" })
+  const {
+    letter,
+    insert,
+    remove,
+    insertChar,
+    deleteChar,
+    insertEnter,
+    moveSelect,
+    changeAlign,
+  } = useLetterHook({
+    id: "",
+  })
 
   const { selector } = useSelectHook()
 
@@ -34,7 +45,35 @@ export const PaperView = () => {
     insert(str, newLine, (section) => {
       selector.update(section)
     })
-  const onUpdate = (str: string, newLine: boolean) => insert(str, newLine)
+
+  const onChangeAlign = (align: string) => changeAlign(align)
+
+  const onKeyAction = (key: string) => {
+    if (key === "LEFT") {
+      moveSelect(-1)
+    } else if (key === "RIGHT") {
+      moveSelect(1)
+    } else if (key === "UP") {
+      moveSelect(-21)
+    } else if (key === "DOWN") {
+      moveSelect(21)
+    } else if (key === "TAB") {
+      insertChar("  ")
+    }
+  }
+
+  const onUpdate = (str: string) => {
+    insertChar(str)
+  }
+
+  const onInsertEnter = () => {
+    insertEnter()
+  }
+
+  const onDeleteChar = () => {
+    console.log("delete char")
+    deleteChar()
+  }
 
   const onDelete = (flag: boolean) => {
     remove()
@@ -87,12 +126,14 @@ export const PaperView = () => {
           onClick={(e) => {
             e.stopPropagation()
           }}
-          className="w-[100%] sm:w-[420px] bg-[rgba(255,255,255,.4)] pointer-events-auto rounded-xl backdrop-blur border-[1px] border-[#ddd] shadow-2xl shadow-[rgba(0,0,0,.1)]"
+          className="w-[100%] sm:w-[80px] bg-[rgba(255,255,255,.4)] pointer-events-auto rounded-xl backdrop-blur border-[1px] border-[#ddd] shadow-2xl shadow-[rgba(0,0,0,.1)]"
         >
           <InputerView
-            onDelete={onDelete}
-            onEnter={onEnter}
+            onDelete={onDeleteChar}
+            onEnter={onInsertEnter}
             onChangeValue={onUpdate}
+            onKeyAction={onKeyAction}
+            onChangeAlign={onChangeAlign}
           />
         </div>
       </>
@@ -109,15 +150,39 @@ export const PaperView = () => {
         })
         const page = pages[pageIndex]
         if (page) {
-          const { boxs } = page
+          const { boxs, vos, list } = page
           const box = boxs[section - page.start]
           if (box) {
             const h = isMobile ? 24 : 30
             const offset = isMobile ? 68 : 76
             // TODO the page top
             const pageTop = pageIndex * 880
+
+            let top = (isEmpty ? 0 : box.start) * h + offset + pageTop
+            let left = 0
+            let index = selector.value.index
+            console.log(index)
+            if (index > 0) {
+              const curList = list.filter((item) => {
+                const m = item.split("_")
+                const num = parseInt(m[0], 10)
+                return num >= box.start && num <= box.end
+              })
+
+              const key = curList[Math.min(index - 1, curList.length)]
+              const item = vos[key]
+              if (item) {
+                left = item.pos.x * 10 + item.size * 10
+                top = item.pos.y * h + offset + pageTop
+              }
+              if (isEmpty) {
+                left = 0
+              }
+            }
+
             return {
-              top: `${box.end * h + offset + pageTop}px`,
+              top: `${top}px`,
+              left: `${left}px`,
             }
           }
         }
@@ -126,7 +191,7 @@ export const PaperView = () => {
     return {
       display: "none",
     }
-  }, [isMobile, selector.value, pages])
+  }, [isMobile, selector.value, isEmpty])
 
   const keyRender = useMemo(() => {
     if (!letter) {
@@ -142,7 +207,9 @@ export const PaperView = () => {
           } else if (type === "ESC") {
             selector.hideInput()
           } else if (type === "EDIT") {
-            selector.showInput()
+            setTimeout(() => {
+              selector.showInput()
+            }, 100)
           } else if (type === "UP") {
             selector.moveUp()
           } else if (type === "DOWN") {
@@ -154,7 +221,7 @@ export const PaperView = () => {
   }, [letter])
 
   const extra = (
-    <div className="absolute w-full left-0 sm:left-[160px]" style={inputStyle}>
+    <div className="absolute left-0 sm:ml-[160px]" style={inputStyle}>
       {inputRender}
       {keyRender}
     </div>

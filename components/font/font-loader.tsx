@@ -22,7 +22,6 @@ export const FontLoader = ({ src }: { src: string }) => {
       //   "Content-Type": "application/json",
       // },
       onDownloadProgress: (progressEvent: any) => {
-        console.log(111, progressEvent)
         const percentCompleted = Math.round(
           (progressEvent.loaded * 100) / (progressEvent.total ?? 7427360)
         )
@@ -33,7 +32,6 @@ export const FontLoader = ({ src }: { src: string }) => {
     // 处理下载完成后的文件
     // const file = new Blob([response.data])
     // Do something with the file...
-    console.log(4444)
     setStatus("READY")
   }
   return (

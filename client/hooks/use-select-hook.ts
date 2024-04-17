@@ -37,36 +37,40 @@ export const useSelectHook = () => {
     return {
       value: selectorVos[current ?? ""],
       get: (id?: string) => getSelector(id ?? current ?? ""),
-      update: (index: number) => {
+      update: (section: number, index?: number) => {
         if (current) {
-          console.log("select", index)
-          let section = index
+          console.log("select", section)
           const letter = getLetter(current ?? "")
           if (letter) {
             const { sections } = letter
             if (section > -1) {
-              if (section > sections.length) {
-                section = sections.length
+              if (sections.length && section >= sections.length) {
+                section = sections.length - 1
               }
+              const text = sections[section] ?? ""
               setSelector(current, {
                 section: section,
+                index: index !== undefined ? index : text.length,
               })
             } else {
               // clear selector
               setSelector(current, null)
+              inputFocus(0)
             }
-
-            updateInputValue(section)
           }
         }
       },
       showInput: () => {
         toggleShow(true)
-        inputFocus()
+        setTimeout(() => {
+          inputFocus()
+        }, 100)
       },
       hideInput: () => {
         toggleShow(false)
-        inputFocus(0)
+        setTimeout(() => {
+          inputFocus(0)
+        }, 100)
       },
 
       moveUp: () => {

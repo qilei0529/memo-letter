@@ -2,6 +2,7 @@ import { create } from "zustand"
 
 export type ISelectorData = {
   section: number
+  index: number
 }
 
 type ISelectState = {

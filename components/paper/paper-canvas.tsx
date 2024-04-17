@@ -6,6 +6,7 @@ import {
   isChinese,
   isChinesePunctuation,
   isNormalText,
+  isChinesePunctuationBig,
 } from "@/client/hooks/use-letter-hook"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
@@ -46,15 +47,16 @@ export function PaperCanvas({
       ctx.clearRect(0, 0, size.width * ratio, size.height * ratio)
       data.forEach((item) => {
         const { pos } = item
-        const x = (pos.x * 10 + offset.x) * ratio
+        const d =
+          isChinese(item.text) || isChinesePunctuationBig(item.text)
+            ? 0
+            : isChinesePunctuation(item.text)
+            ? -2
+            : -6
+        const x = (pos.x * 10 + offset.x + d) * ratio
         const y = (pos.y * 30 + offset.y) * ratio
         // 设置文字样式
-        ctx.font =
-          isNormalText(item.text) ||
-          isChinese(item.text) ||
-          isChinesePunctuation(item.text)
-            ? "40px FontSystem"
-            : "32px serif"
+        ctx.font = "40px FontSystem"
 
         ctx.fillStyle = "black"
         ctx.textAlign = "center"

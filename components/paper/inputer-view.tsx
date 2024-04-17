@@ -4,8 +4,16 @@ import { useInputerStore } from "@/client/stores/input-store"
 import { Icons } from "@/shared/icons"
 import { cn } from "@/lib/utils"
 import { useInputerHook } from "@/client/hooks/use-inputer-hook"
+import { useSelectStore } from "@/client/stores/select-store"
+import { useSelectHook } from "@/client/hooks/use-select-hook"
 
-export function InputerView({ onEnter, onDelete, onChangeValue }: any) {
+export function InputerView({
+  onEnter,
+  onDelete,
+  onChangeValue,
+  onKeyAction,
+  onChangeAlign,
+}: any) {
   const value = useInputerStore((state) => state.value)
   const align = useInputerStore((state) => state.align)
   const setAlign = useInputerStore((state) => state.setAlign)
@@ -13,6 +21,8 @@ export function InputerView({ onEnter, onDelete, onChangeValue }: any) {
     onEnter,
     onDelete,
     onChangeValue,
+    onKeyAction,
+    onChangeAlign,
   })
 
   const textStyle = useMemo(() => {
@@ -33,24 +43,26 @@ export function InputerView({ onEnter, onDelete, onChangeValue }: any) {
 
   return (
     <div className="flex flex-row p-2 space-x-2">
-      <div className="w-full flex flex-col flex-1">
-        <textarea
+      <div className="absolute top-[-30px] left-0 flex flex-col flex-1">
+        <input
           value={value}
           {...textareaProps}
-          style={textStyle}
-          className="flex w-full rounded-lg bg-[rgba(255,255,255,.6)] px-2 resize-none appearance-none bg-none text-[16px] py-1"
+          // className="flex w-full text-nowrap rounded-lg bg-[rgba(255,255,255,.6)] px-2 resize-none appearance-none bg-none text-[16px] py-1"
+          className="flex opacity-0 w-[0px] h-[0px] text-nowrap px-2 bg-none text-[16px] py-1 absolute left-[20px]"
         />
+        <div className="absolute h-[20px] bg-slate-700 w-[2px] animate-blink"></div>
       </div>
-      <div className="w-[42px] text-[#000000]">
+      <div className="flex-1"></div>
+      <div className=" text-[#000000]">
         <div
           onClick={() => handleEnter(value)}
-          className="flex flex-col h-[32px] justify-center items-center text-[12px] text-blue-700 bg-blue-200 rounded-lg hover:bg-blue-300 cursor-pointer"
+          className="hidden flex-col h-[32px] justify-center items-center text-[12px] text-blue-700 bg-blue-200 rounded-lg hover:bg-blue-300 cursor-pointer"
         >
           <div className="flex flex-row items-center justify-center ">
             <Icons.write className="w-3.5 h-3.5 stroke-[3px]" />
           </div>
         </div>
-        <div className="flex flex-row pt-1">
+        <div className="flex flex-row">
           <div className="flex-1"></div>
           <div
             onClick={() => {

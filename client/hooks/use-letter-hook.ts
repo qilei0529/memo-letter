@@ -38,6 +38,178 @@ export const useLetterHook = ({ id }: { id: string }) => {
     }, 100)
   }, [id])
 
+  const changeAlign = (align: string) => {
+    console.log(align)
+    const { current, letterVos } = useLetterStore.getState()
+    const { selectorVos, setSelector } = useSelectStore.getState()
+    if (current) {
+      const letter = letterVos[current]
+      const selector = selectorVos[current]
+
+      // 获取 当前 行数据
+      if (letter) {
+        const { sections } = letter
+        const nextSection = selector.section
+        let sectionLine = sections[nextSection] ?? ""
+
+        sectionLine = sectionLine.replace(RIGHT, "")
+        if (align === "RIGHT") {
+          insertSectionAt(current, `${RIGHT}${sectionLine}`, nextSection, true)
+        } else {
+          insertSectionAt(current, `${sectionLine}`, nextSection, true)
+        }
+      }
+    }
+  }
+
+  const insertEnter = () => {
+    console.log("insert enter")
+    const { current, letterVos } = useLetterStore.getState()
+    const { selectorVos, setSelector } = useSelectStore.getState()
+    if (current) {
+      const letter = letterVos[current]
+      const selector = selectorVos[current]
+
+      // 获取 当前 行数据
+      if (letter) {
+        const { sections } = letter
+        let nextSection = selector.section
+        const curSectionLine = sections[selector.section] ?? ""
+
+        // 插入 到对应 index
+        const newSectionLine = insertString(
+          curSectionLine,
+          "\n",
+          selector.index
+        )
+        const lines =
+          newSectionLine.indexOf("\n") > -1
+            ? newSectionLine.split("\n")
+            : [newSectionLine]
+        lines.forEach((line, index) => {
+          insertSectionAt(
+            current,
+            line,
+            nextSection,
+            index === 0 ? true : false
+          )
+          nextSection += 1
+        })
+
+        setSelector(current, {
+          section: nextSection - 1,
+          index: 0,
+        })
+      }
+    }
+  }
+
+  const moveSelect = (d: number, top: number = 0) => {
+    console.log("insert enter")
+    const { current, letterVos } = useLetterStore.getState()
+    const { selectorVos, setSelector } = useSelectStore.getState()
+    if (current) {
+      const letter = letterVos[current]
+      const selector = selectorVos[current]
+
+      // 获取 当前 行数据
+      if (letter) {
+        const { sections } = letter
+        const nextSection = selector.section
+        const sectionLine = sections[nextSection] ?? ""
+
+        let index = selector.index + d
+
+        if (d < 10 && index < 0) {
+          index = selector.index
+        } else if (d > 10 && index > sectionLine.length) {
+          index = selector.index
+        }
+
+        index = Math.min(index, sectionLine.length)
+        index = Math.max(index, 0)
+
+        setSelector(current, {
+          section: nextSection,
+          index,
+        })
+      }
+    }
+  }
+
+  const deleteChar = () => {
+    console.log("delete char")
+    const { current, letterVos } = useLetterStore.getState()
+    const { selectorVos, setSelector } = useSelectStore.getState()
+    if (current) {
+      const letter = letterVos[current]
+      const selector = selectorVos[current]
+
+      // 获取 当前 行数据
+      const { sections } = letter
+      const curSectionLine = sections[selector.section] ?? ""
+
+      let at = selector?.section ?? letter?.sections.length
+
+      // 删除一个字符
+      // 插入 到对应 index
+      if (curSectionLine.length > 0) {
+        const newSectionLine = deleteString(
+          curSectionLine ?? "",
+          selector.index,
+          1
+        )
+
+        insertSectionAt(current, newSectionLine, at, true)
+        let newIndex = selector.index - 1
+        if (newIndex < 0) {
+          newIndex = 0
+        }
+
+        // index
+        setSelector(current, {
+          section: selector.section,
+          index: newIndex,
+        })
+      } else {
+        console.log("delete line")
+        remove()
+
+        let newSection = Math.max(selector.section - 1, 0)
+        // 插入 到对应 index
+        const nextSectionLine = sections[newSection] ?? ""
+        // index
+        setSelector(current, {
+          section: newSection,
+          index: nextSectionLine.length,
+        })
+      }
+    }
+  }
+
+  const insertChar = (char: string) => {
+    const { current, letterVos } = useLetterStore.getState()
+    const { selectorVos, setSelector } = useSelectStore.getState()
+    if (current) {
+      const letter = letterVos[current]
+      const selector = selectorVos[current]
+      let at = selector?.section ?? letter?.sections.length
+      // 获取 当前 行数据
+      const { sections } = letter
+      const curSectionLine = sections[selector.section] ?? ""
+
+      // 插入 到对应 index
+      const newSectionLine = insertString(curSectionLine, char, selector.index)
+      insertSectionAt(current, newSectionLine, at, true)
+
+      // 更新 index
+      setSelector(current, {
+        section: selector.section,
+        index: selector.index + char.length,
+      })
+    }
+  }
+
   const insert = (
     section: string,
     newLine?: boolean,
@@ -94,6 +266,11 @@ export const useLetterHook = ({ id }: { id: string }) => {
     letter,
     insert,
     remove,
+    deleteChar,
+    insertChar,
+    insertEnter,
+    moveSelect,
+    changeAlign,
   }
 }
 
@@ -254,7 +431,7 @@ export function transLetterToPos(letter: string) {
 
 // 插入 数据 到 vos 和 list
 const insertLine = (data: any[], target: any) => {
-  data.forEach((item) => {
+  data.forEach((item, index) => {
     const { pos } = item
     const key = `${pos.y}_${pos.x}`
     target.vos[key] = item
@@ -266,8 +443,11 @@ function getWidth(char: string) {
   if (isChinese(char)) {
     return 2
   }
-  if (isChinesePunctuation(char)) {
+  if (isChinesePunctuationBig(char)) {
     return 2
+  }
+  if (isChinesePunctuation(char)) {
+    return 1
   }
   return 1
 }
@@ -276,11 +456,31 @@ export function isChinese(char: string) {
   return /^[\u4e00-\u9fa5]$/.test(char)
 }
 
+// 中文标点 小
 export function isChinesePunctuation(char: string) {
   return /[\u3001\u3002\uFF0C\uFF1F\uFF01]/.test(char)
+}
+// 中文标点 大
+export function isChinesePunctuationBig(char: string) {
+  return /[\uFF5E]/.test(char)
 }
 
 export function isNormalText(char: string) {
   const regex = /^[a-zA-Z0-9]*$/
   return regex.test(char)
+}
+
+function insertString(
+  mainString: string,
+  insertString: string,
+  position: number
+) {
+  return (
+    mainString.slice(0, position) + insertString + mainString.slice(position)
+  )
+}
+
+function deleteString(mainString: string, position: number, count: number) {
+  let index = Math.max(position - count, 0)
+  return mainString.slice(0, index) + mainString.slice(position)
 }

@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const config: Config = {
   content: [
@@ -8,13 +8,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      keyframes: {
+        blinkingBg: {
+          "0%, 100%": { opacity: "1" },
+          "40%, 60%": { opacity: "0" },
+        },
+      },
+      animation: {
+        blink: "blinkingBg 1s infinite",
       },
     },
   },
   plugins: [],
-};
-export default config;
+}
+export default config
