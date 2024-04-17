@@ -172,7 +172,7 @@ export const useInputerHook = ({
 
   const isFocus = useMemo(() => {
     return focusTimeStamp > 0
-  }, [])
+  }, [focusTimeStamp])
 
   return {
     value,

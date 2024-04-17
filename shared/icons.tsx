@@ -6,6 +6,7 @@ import {
   LucideProps,
   Download,
   Loader2,
+  IndentIncrease,
 } from "lucide-react"
 
 export const Icons = {
@@ -14,6 +15,7 @@ export const Icons = {
   font: BookA,
   download: Download,
   spinner: Loader2,
+  indent: IndentIncrease,
   github: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
